@@ -1,3 +1,11 @@
+stxs_truth_variables=[
+    "HTXSstage0cat := tagTruth().HTXSstage0cat",
+    "HTXSstage1cat := tagTruth().HTXSstage1cat",
+    "HTXSnjets := tagTruth().HTXSnjets",
+    "HTXSpTH := tagTruth().HTXSpTH",
+    "HTXSpTV := tagTruth().HTXSpTV"
+    ]
+
 dipho_variables=[
     "dipho_sumpt            := diPhoton.sumPt",
     "dipho_cosphi           := abs(cos(diPhoton.leadingPhoton.phi - diPhoton.subLeadingPhoton.phi))",
