@@ -189,11 +189,14 @@ from flashgg.MetaData.samples_utils import SamplesManager
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring(
 #"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170113_234241/0000/myMicroAODOutputFile_1.root"
+"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016E-03Feb2017-v1/170310_111722/0000/myMicroAODOutputFile_1.root"
 #"root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIIFall17-3_0_0/3_0_0/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIIFall17-3_0_0-3_0_0-v0-RunIIFall17MiniAOD-\
 #94X_mc2017_realistic_v10-v1/180325_165120/0000/myMicroAODOutputFile_59.root"
 #"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170113_234241/0000/myMicroAODOutputFile_1.root"
 #                                 "/store/group/phys_higgs/cmshgg/ferriff/flashgg/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2/2_3_0/QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2-2_3_0-v0-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/161114_094221/0000/myMicroAODOutputFile_62.root"
-"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/170114_100423/0000/myMicroAODOutputFile_100.root"
+#"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/170114_100423/0000/myMicroAODOutputFile_100.root"
+#"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170212_190415/0000/myMicroAODOutputFile_10.root"
+#"/store/group/phys_higgs/cmshgg/ferriff/flashgg/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2/2_3_0/DoubleEG/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2-2_3_0-v0-Run2016B-23Sep2016-v2/161114_162452/0000/myMicroAODOutputFile_1.root"
                                  #"/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/VBFHToGG_M125_13TeV_amcatnlo_pythia8_CUETP8M1Down/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/170114_093048/0000/myMicroAODOutputFile_2.root"
 #                                 "/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170114_092925/0000/myMicroAODOutputFile_19.root"
 
@@ -289,13 +292,12 @@ cloneTagSequenceForEachSystematic(process,
                                   ZPlusJetMode=2)
 
 
-#all_variables = var.dipho_variables + var.dijet_variables +  new_variables 
-all_variables = minimalVariablesStage1 + jetStudyVariables
+all_variables = jetStudyVariables
 
 if customize.processId != "Data":
-    pass
-    #all_variables += matching_photon# + jet_syst_weights
-    #all_variables += var.stxs_truth_variables
+    all_variables += minimalVariablesStage1
+else:
+    all_variables += minimalNonSignalVariables
 
 cats = []
 
@@ -317,7 +319,8 @@ process.vbfTagDumper.nameTemplate = "$PROCESS_$SQRTS_$CLASSNAME_$SUBCAT_$LABEL"
 from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
 if customize.runOnZee:
     if customize.processId == "Data":
-        process.hltHighLevel = hltHighLevel.clone(HLTPaths = cms.vstring("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v**") )
+        #process.hltHighLevel = hltHighLevel.clone(HLTPaths = cms.vstring("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v**") )
+        process.hltHighLevel = hltHighLevel.clone(HLTPaths = cms.vstring("HLT_Ele27_WPTight_Gsf_v*") )
 else:
     process.hltHighLevel = hltHighLevel.clone(HLTPaths = cms.vstring("HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v*"))
 
