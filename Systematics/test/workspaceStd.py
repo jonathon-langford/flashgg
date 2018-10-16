@@ -175,6 +175,22 @@ if customize.tthTagsOnly:
     process.flashggTagSequence.remove(process.flashggVBFMVA)
     process.flashggTagSequence.remove(process.flashggVBFDiPhoDiJetMVA)
 
+#FIXME
+#sneaky way to ensure that the Stage1 tag selector always considers the jets in the event
+if customize.doStage1:
+    process.flashggVBFTag.RequireVBFPreselection = cms.bool(False)
+    process.flashggTagSequence.remove(process.flashggUntagged)
+    process.flashggTagSorter.TagPriorityRanges = cms.VPSet( #otherwise would get zero events in VH MET and VH had
+        cms.PSet(TagName = cms.InputTag('flashggTTHLeptonicTag')),
+        cms.PSet(TagName = cms.InputTag('flashggZHLeptonicTag')),
+        cms.PSet(TagName = cms.InputTag('flashggWHLeptonicTag')),
+        cms.PSet(TagName = cms.InputTag('flashggVHLeptonicLooseTag')),
+        cms.PSet(TagName = cms.InputTag('flashggTTHHadronicTag')),
+        cms.PSet(TagName = cms.InputTag('flashggVHMetTag')),
+        cms.PSet(TagName = cms.InputTag('flashggVHHadronicTag')),
+        cms.PSet(TagName = cms.InputTag('flashggVBFTag'))
+        )
+
 print 'here we print the tag sequence after'
 print process.flashggTagSequence
 
@@ -396,7 +412,9 @@ elif customize.doStage1 and not customize.processId == "Data":
     ["RECO_1J_PTH_120_200_Tag0",0], ["RECO_1J_PTH_120_200_Tag1",0], ["RECO_1J_PTH_GT200",0], 
     ["RECO_GE2J_PTH_0_60_Tag0",0], ["RECO_GE2J_PTH_0_60_Tag1",0], ["RECO_GE2J_PTH_60_120_Tag0",0], ["RECO_GE2J_PTH_60_120_Tag1",0], 
     ["RECO_GE2J_PTH_120_200_Tag0",0], ["RECO_GE2J_PTH_120_200_Tag1",0], ["RECO_GE2J_PTH_GT200_Tag0",0], ["RECO_GE2J_PTH_GT200_Tag1",0], 
-    ["RECO_VBFTOPO_JET3VETO_Tag0",0], ["RECO_VBFTOPO_JET3VETO_Tag1",0],["RECO_VBFTOPO_JET3VETO_Tag2",0], ["RECO_VBFTOPO_JET3_Tag0",0], ["RECO_VBFTOPO_JET3_Tag1",0], ["RECO_VBFTOPO_JET3_Tag2",0],
+    #["RECO_VBFTOPO_JET3VETO_Tag0",0], ["RECO_VBFTOPO_JET3VETO_Tag1",0],["RECO_VBFTOPO_JET3VETO_Tag2",0], ["RECO_VBFTOPO_JET3_Tag0",0], ["RECO_VBFTOPO_JET3_Tag1",0], ["RECO_VBFTOPO_JET3_Tag2",0],
+    #FIXME
+    ["RECO_VBFTOPO_JET3VETO_Tag0",0], ["RECO_VBFTOPO_JET3VETO_Tag1",0], ["RECO_VBFTOPO_JET3_Tag0",0], ["RECO_VBFTOPO_JET3_Tag1",0],
     ["RECO_WHLEP",0], ["RECO_ZHLEP",0], ["RECO_VHLEPLOOSE",0], ["RECO_VHMET",0], ["RECO_VHHAD",0],
     ["RECO_TTH_LEP",0], ["RECO_TTH_HAD",0] ]
 elif customize.doStage1 and customize.processId == "Data":
@@ -406,7 +424,9 @@ elif customize.doStage1 and customize.processId == "Data":
     ["RECO_1J_PTH_120_200_Tag0",0], ["RECO_1J_PTH_120_200_Tag1",0], ["RECO_1J_PTH_GT200",0], 
     ["RECO_GE2J_PTH_0_60_Tag0",0], ["RECO_GE2J_PTH_0_60_Tag1",0], ["RECO_GE2J_PTH_60_120_Tag0",0], ["RECO_GE2J_PTH_60_120_Tag1",0], 
     ["RECO_GE2J_PTH_120_200_Tag0",0], ["RECO_GE2J_PTH_120_200_Tag1",0], ["RECO_GE2J_PTH_GT200_Tag0",0], ["RECO_GE2J_PTH_GT200_Tag1",0], 
-    ["RECO_VBFTOPO_JET3VETO_Tag0",0], ["RECO_VBFTOPO_JET3VETO_Tag1",0],["RECO_VBFTOPO_JET3VETO_Tag2",0], ["RECO_VBFTOPO_JET3_Tag0",0], ["RECO_VBFTOPO_JET3_Tag1",0], ["RECO_VBFTOPO_JET3_Tag2",0],
+    #["RECO_VBFTOPO_JET3VETO_Tag0",0], ["RECO_VBFTOPO_JET3VETO_Tag1",0],["RECO_VBFTOPO_JET3VETO_Tag2",0], ["RECO_VBFTOPO_JET3_Tag0",0], ["RECO_VBFTOPO_JET3_Tag1",0], ["RECO_VBFTOPO_JET3_Tag2",0],
+    #FIXME
+    ["RECO_VBFTOPO_JET3VETO_Tag0",0], ["RECO_VBFTOPO_JET3VETO_Tag1",0], ["RECO_VBFTOPO_JET3_Tag0",0], ["RECO_VBFTOPO_JET3_Tag1",0],
     ["RECO_WHLEP",0], ["RECO_ZHLEP",0], ["RECO_VHLEPLOOSE",0], ["RECO_VHMET",0], ["RECO_VHHAD",0],
     ["RECO_TTH_LEP",0], ["RECO_TTH_HAD",0] ]
 elif customize.tthTagsOnly:
