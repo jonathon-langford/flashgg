@@ -23,7 +23,7 @@ flashggDiPhotonMVA = cms.EDProducer('FlashggDiPhotonMVAProducer',
                                     #diphotonMVAweightfile = cms.FileInPath("flashgg/Taggers/data/Flashgg_DiPhoton_80x.weights.xml"),
                                     diphotonMVAweightfile = cms.FileInPath("flashgg/Taggers/data/Flashgg_DiPhoton_Moriond17.weights.xml"),
                                     #xgbDiphotonMVAweightfile = cms.FileInPath("flashgg/Taggers/data/XGBoost_DiphotonBDT.weights.xml"),
-                                    xgbDiphotonMVAweightfile = cms.FileInPath("flashgg/Taggers/data/altDiphoModel__eta_0.5.xml"),
+                                    xgbDiphotonMVAweightfile = cms.FileInPath("flashgg/Taggers/data/altDiphoModel.xml"),
                                     
                                     # xml 2015                                    
                                     #            VertexProbParamsConv=cms.vdouble(-0.049,-0.241,-0.505,-0.270),
