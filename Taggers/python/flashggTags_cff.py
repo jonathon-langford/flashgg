@@ -544,4 +544,3 @@ flashggZPlusJetTag = cms.EDProducer("FlashggZPlusJetTagProducer",
                                     GenParticleTag=cms.InputTag( "flashggPrunedGenParticles" ),
                                     GenJetTag = cms.InputTag("slimmedGenJets")
                                     )
-
