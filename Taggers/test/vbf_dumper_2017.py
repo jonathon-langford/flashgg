@@ -334,6 +334,20 @@ if (customize.processId.count("wh") or customize.processId.count("zh")) and not 
     process.VHFilter.chooseW = bool(customize.processId.count("wh"))
     process.VHFilter.chooseZ = bool(customize.processId.count("zh"))
 
+# Split out prompt-fake or fake-fake
+process.finalFilter = cms.Sequence()
+if (customize.processId.count("qcd") or customize.processId.count("gjet")) and customize.processId.count("fake"):
+    process.load("flashgg/Systematics/PromptFakeFilter_cfi")
+    process.finalFilter += process.PromptFakeFilter
+    if (customize.processId.count("promptfake")):
+        process.PromptFakeFilter.doPromptFake = cms.bool(True)
+        process.PromptFakeFilter.doFakeFake =cms.bool(False)
+    elif (customize.processId.count("fakefake")):
+        process.PromptFakeFilter.doPromptFake =cms.bool(False)
+        process.PromptFakeFilter.doFakeFake =cms.bool(True)
+    else:
+        raise Exception,"Mis-configuration of python for prompt-fake filter"
+
 process.p = cms.Path(process.dataRequirements
                      * process.genFilter
                      * process.flashggUpdatedIdMVADiPhotons
@@ -347,6 +361,7 @@ process.p = cms.Path(process.dataRequirements
                      * (process.flashggTagSequence
                         + process.systematicsTagSequences)
                      * process.flashggSystTagMerger
+                     * process.finalFilter
                      * process.vbfTagDumper
                      )
 
