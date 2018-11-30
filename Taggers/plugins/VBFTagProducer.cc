@@ -41,6 +41,7 @@ namespace flashgg {
 
         EDGetTokenT<View<DiPhotonCandidate> >      diPhotonToken_;
         EDGetTokenT<View<VBFDiPhoDiJetMVAResult> > vbfDiPhoDiJetMvaResultToken_;
+        EDGetTokenT<double> prefireToken_;
         EDGetTokenT<View<VBFMVAResult> >           vbfMvaResultToken_;
         EDGetTokenT<View<DiPhotonMVAResult> >      mvaResultToken_;
         EDGetTokenT<View<reco::GenParticle> >      genPartToken_;
@@ -73,6 +74,7 @@ namespace flashgg {
     VBFTagProducer::VBFTagProducer( const ParameterSet &iConfig ) :
         diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "DiPhotonTag" ) ) ),
         vbfDiPhoDiJetMvaResultToken_( consumes<View<flashgg::VBFDiPhoDiJetMVAResult> >( iConfig.getParameter<InputTag> ( "VBFDiPhoDiJetMVAResultTag" ) ) ),
+        prefireToken_ ( consumes<double>( iConfig.getParameter<InputTag> ( "PrefireProbability" ) ) ),
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag> ( "MVAResultTag" ) ) ),
         genPartToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
         genJetToken_ ( consumes<View<reco::GenJet> >( iConfig.getParameter<InputTag> ( "GenJetTag" ) ) ),
@@ -141,6 +143,13 @@ namespace flashgg {
         
         Handle<View<flashgg::VBFDiPhoDiJetMVAResult> > vbfDiPhoDiJetMvaResults;
         evt.getByToken( vbfDiPhoDiJetMvaResultToken_, vbfDiPhoDiJetMvaResults );
+
+        Handle<double> prefireProb;
+        evt.getByToken( prefireToken_, prefireProb );
+        //if ( prefireProb.isValid() ) {
+        //    std::cout << "ED DEBUG: in stage 1 tagger, found prefire prob of " << *(prefireProb.product()) << std::endl;
+        //}
+        //else { std::cout << "ED DEBUG: in stage 1 tagger, prefire prob is not valid" << std::endl;  }
 
         JetCollectionVector Jets( inputTagJets_.size() );
         for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
@@ -217,6 +226,7 @@ namespace flashgg {
             tag_obj.setSystLabel    ( systLabel_ );
 
             tag_obj.includeWeights( *dipho );
+            tag_obj.setWeight("prefireProbability", *(prefireProb.product())); // add the prefire probability
 
             StageOneTag stage1tag_obj( dipho, mvares, vbfdipho_mvares );
             stage1tag_obj.setDiPhotonIndex( candIndex );
@@ -258,7 +268,6 @@ namespace flashgg {
                     tag_obj.setWeight("UnmatchedPUWeightUp01sigma", tag_obj.centralWeight() * j1upadjust * j2upadjust );
                     tag_obj.setWeight("UnmatchedPUWeightDown01sigma", tag_obj.centralWeight() * j1downadjust * j2downadjust );
                 }
-                stage1tag_obj.includeWeights(tag_obj);
                 if (false && systLabel_ == "") {
                     for (auto it = tag_obj.weightListBegin() ; it != tag_obj.weightListEnd(); it++) {
                         std::cout << "SCZ Weight Debug " << *it << " " << tag_obj.weight(*it) << std::endl;
@@ -266,6 +275,8 @@ namespace flashgg {
                     }
                 }
             }
+
+            stage1tag_obj.includeWeights(tag_obj);
             
             if ( getQCDWeights_ ) {
                 for( unsigned int weight_index = 0; weight_index < (*WeightHandle).size(); weight_index++ ){

@@ -283,6 +283,7 @@ cloneTagSequenceForEachSystematic(process,
 
 
 all_variables = jetStudyVariables
+all_variables.append("prefireProbability := weight(\"prefireProbability\")")
 
 if customize.processId != "Data":
     all_variables += minimalVariablesStage1
