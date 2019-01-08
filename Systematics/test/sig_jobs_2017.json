@@ -1,6 +1,6 @@
 {
     "processes" : {
-        "vbf_125"  : [ [ "/VBFHToGG_M125_13TeV_amcatnlo_pythia8", { "args" :["outputFile=output_VBFHToGG_M125_13TeV_amcatnlo_pythia8.root"] } ] ],
+        "vbf_125"  : [ [ "/VBFHToGG_M125_13TeV_amcatnlo_pythia8/sethzenz-RunIIFall17-3_1_1-3_1_1-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1-8c2370618895cdda75cb734cbbe9e7b2/USER", { "args" :["outputFile=output_VBFHToGG_M125_13TeV_amcatnlo_pythia8.root"] } ] ],
         "ggh_125"  : [ [ "/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8", { "args" :["outputFile=output_GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8.root"] } ] ],
         "ggh_120"  : [ "/GluGluHToGG_M120_13TeV_amcatnloFXFX_pythia8" ],
         "ggh_130"  : [ "/GluGluHToGG_M130_13TeV_amcatnloFXFX_pythia8" ],

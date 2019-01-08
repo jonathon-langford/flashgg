@@ -226,7 +226,7 @@ namespace flashgg {
             tag_obj.setSystLabel    ( systLabel_ );
 
             tag_obj.includeWeights( *dipho );
-            tag_obj.setWeight("prefireProbability", *(prefireProb.product())); // add the prefire probability
+            tag_obj.setCentralWeight( tag_obj.centralWeight() * ( 1. - *(prefireProb.product()) ) ); // add the prefire probability
 
             StageOneTag stage1tag_obj( dipho, mvares, vbfdipho_mvares );
             stage1tag_obj.setDiPhotonIndex( candIndex );
