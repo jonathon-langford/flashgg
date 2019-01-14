@@ -33,7 +33,7 @@ elif os.environ["CMSSW_VERSION"].count("CMSSW_9_4"):
 else:
     raise Exception,"Could not find a sensible CMSSW_VERSION for default globaltag"
 
-process.maxEvents   = cms.untracked.PSet( input  = cms.untracked.int32( 1000 ) )
+process.maxEvents   = cms.untracked.PSet( input  = cms.untracked.int32( 100 ) )
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 1000 )
 
 from flashgg.Systematics.SystematicsCustomize import *
@@ -188,21 +188,10 @@ from flashgg.MetaData.samples_utils import SamplesManager
 
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring(
-"file:/vols/cms/es811/FinalFits/ForJonno/myMicroAODOutputFile_VBF.root"
-#"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170113_234241/0000/myMicroAODOutputFile_1.root"
-#"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016E-03Feb2017-v1/170310_111722/0000/myMicroAODOutputFile_1.root"
-#"root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIIFall17-3_0_0/3_0_0/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIIFall17-3_0_0-3_0_0-v0-RunIIFall17MiniAOD-\
-#94X_mc2017_realistic_v10-v1/180325_165120/0000/myMicroAODOutputFile_59.root"
-#"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170113_234241/0000/myMicroAODOutputFile_1.root"
-#                                 "/store/group/phys_higgs/cmshgg/ferriff/flashgg/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2/2_3_0/QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2-2_3_0-v0-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/161114_094221/0000/myMicroAODOutputFile_62.root"
-#"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/170114_100423/0000/myMicroAODOutputFile_100.root"
-#"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170212_190415/0000/myMicroAODOutputFile_10.root"
-#"/store/group/phys_higgs/cmshgg/ferriff/flashgg/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2/2_3_0/DoubleEG/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2-2_3_0-v0-Run2016B-23Sep2016-v2/161114_162452/0000/myMicroAODOutputFile_1.root"
-                                 #"/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/VBFHToGG_M125_13TeV_amcatnlo_pythia8_CUETP8M1Down/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/170114_093048/0000/myMicroAODOutputFile_2.root"
-#                                 "/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170114_092925/0000/myMicroAODOutputFile_19.root"
-
-                                 #"file:/vols/cms/jwright/ForYacine/myMicroAODOutputFile_1.root"
-                                 #"/store/group/phys_higgs/cmshgg/ferriff/flashgg/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2_p3/2_3_0/DoubleEG/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2_p3-2_3_0-v0-Run2016G-23Sep2016-v1/170116_174903/0000/myMicroAODOutputFile_4.root"
+#Data
+#"/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016B-03Feb2017_ver2-v2/170310_111417/0000/myMicroAODOutputFile_159.root"
+#Example MC
+"/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170114_092925/0000/myMicroAODOutputFile_19.root"
                              )
 )
 
@@ -292,11 +281,18 @@ cloneTagSequenceForEachSystematic(process,
                                   jetSystematicsInputTags=jetSystematicsInputTags,
                                   ZPlusJetMode=2)
 
-
 all_variables = jetStudyVariables
 
 if customize.processId != "Data":
     all_variables += minimalVariablesStage1
+    all_variables += [
+                     #STSX 1.1: gen-level quantities to define STXS 1.1 bin
+                    "gen_pTH        := tagTruth().HTXSpTH()",
+                    "n_gen_jets     := tagTruth().HTXSnjets()",
+                    "gen_dijet_Mjj  := VBFMVA().gen_dijet_Mjj",
+                    "gen_ptHjj      := VBFMVA().gen_ptHjj",
+                    "gen_njets_vbfmva := VBFMVA().gen_njets_vbfmva"
+    ] 
 else:
     all_variables += minimalNonSignalVariables
 
@@ -372,7 +368,7 @@ print
 printSystematicInfo(process)
 
 # set default options if needed
-customize.setDefault("maxEvents"  , 1000   )
+customize.setDefault("maxEvents"  , 100   )
 customize.setDefault("targetLumi" ,1.00e+3)
 
 # call the customization
