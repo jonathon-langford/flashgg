@@ -40,6 +40,7 @@ jetStudyVariables = [
                     "diphoptom  := VBFDiPhoDiJetMVA().dipho_PToM",
                     "diphomva   := diPhotonMVA().result",
                     "diphomvaxgb   := 1. / ( 1. + exp( 0.5*log( 2./(diPhotonMVA().xgbResult+1.) - 1 ) ) )",
+                    "dipho_pt   := VBFDiPhoDiJetMVA().dipho_PToM*diPhoton().mass",
                     #diphoton BDT inputs
                     "leadmva     := diPhotonMVA().leadmva",
                     "subleadmva  := diPhotonMVA().subleadmva",

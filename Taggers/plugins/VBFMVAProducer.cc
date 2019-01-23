@@ -35,6 +35,10 @@ namespace flashgg {
         //EDGetTokenT<View<flashgg::Jet> > jetTokenDz_;
         std::vector<edm::InputTag> inputTagJets_;
 
+        //STXS 1.1: tokens for gen collections
+        EDGetTokenT<View<reco::GenParticle> > genPartToken_;
+        EDGetTokenT<View<reco::GenJet> > genJetToken_;
+
         unique_ptr<TMVA::Reader>VbfMva_;
         FileInPath vbfMVAweightfile_;
         string     _MVAMethod;
@@ -93,12 +97,19 @@ namespace flashgg {
         float dijet_subsubleadEta_;
         float dijet_SubsubJPt_;
 
+        //STXS 1.1: gen-level quantities to define STXS bin
+        float gen_dijet_Mjj_;
+        float gen_ptHjj_;
+        int gen_njets_vbfmva_;
+
     };
     
     VBFMVAProducer::VBFMVAProducer( const ParameterSet &iConfig ) :
         diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "DiPhotonTag" ) ) ),
         //jetTokenDz_( consumes<View<flashgg::Jet> >( iConfig.getParameter<InputTag>( "JetTag" ) ) ),
         inputTagJets_ ( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) ),
+        genPartToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
+        genJetToken_ ( consumes<View<reco::GenJet> >( iConfig.getParameter<InputTag> ( "GenJetTag" ) ) ),
         _MVAMethod    ( iConfig.getParameter<string> ( "MVAMethod"    ) ),
         _usePuJetID   ( iConfig.getParameter<bool>   ( "UsePuJetID"   ) ),
         _useJetID     ( iConfig.getParameter<bool>   ( "UseJetID"     ) ),
@@ -152,6 +163,10 @@ namespace flashgg {
         dijet_SubsubJPt_ = -999.;
 
         ptHjj_        = -999.;
+          
+        gen_dijet_Mjj_   = -999;
+        gen_ptHjj_       = -999;
+        gen_njets_vbfmva_ = -1;
         
         if (_MVAMethod != ""){
             VbfMva_.reset( new TMVA::Reader( "!Color:Silent" ) );
@@ -198,6 +213,21 @@ namespace flashgg {
         for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
             evt.getByToken( tokenJets_[j], Jets[j] );
         }
+
+
+        //For Gen info
+        Handle<View<reco::GenParticle> > genParticles;
+        Handle<View<reco::GenJet> > genJets;
+        if(!evt.isRealData() ){
+          evt.getByToken( genPartToken_, genParticles );
+          evt.getByToken( genJetToken_, genJets );
+        }
+
+        //DEBUG: to be deleted
+        //std::cout << std::endl << "In VBFMVAProducer..." << std::endl << std::endl;
+        //std::cout << "   * Size of gen particles = " << genParticles->size() << std::endl;
+        //std::cout << "   * Size of gen jets      = " << genJets->size() << std::endl;
+        //std::cout << "   * Size of DiPhotons     = " << diPhotons->size() << std::endl;
         
         std::unique_ptr<vector<VBFMVAResult> > vbf_results( new vector<VBFMVAResult> );
         for( unsigned int candIndex = 0; candIndex < diPhotons->size() ; candIndex++ ) {
@@ -242,7 +272,61 @@ namespace flashgg {
             dijet_SubsubJPt_ = -999.;
 
             ptHjj_        = -999.;
- 
+
+            gen_dijet_Mjj_      =  -999;
+            gen_ptHjj_          =  -999;
+            gen_njets_vbfmva_   =  -1;
+
+            //STXS 1.1 extract gen 
+            if( !evt.isRealData() ){ 
+
+              //Loop through pT-ordered genJets and require
+              //  1) isolated from gen photons dR > 0.4
+              //  REMOVED ::: 2) associated to gen quarks dR < 1 ::: now using just isolated gen-ejts regardless of initial parton (clsoer to reco situation)
+              //  3) if in acceptance( pT > 30 GeV and |eta| < 4.7
+              //Store two gen-jets in collection (leading and subleading), if size < 2: set gen variables to -999
+              std::vector< edm::Ptr<reco::GenJet> > VBFGenJets;
+              for( unsigned int genJet_idx = 0; genJet_idx < genJets->size(); genJet_idx++ ){
+                bool isIsolated = true;//, isQ = false;
+                edm::Ptr<reco::GenJet> jet = genJets->ptrAt(genJet_idx);
+                for( unsigned int gen_idx = 0; gen_idx < genParticles->size(); gen_idx++ ){
+                  edm::Ptr<reco::GenParticle> part = genParticles->ptrAt(gen_idx);
+                  if( part->isHardProcess() ){
+                    // 1) Isolated from gen photons (pdgId==22)
+                    if( part->pdgId() == 22 ){
+                      if( deltaR( part->eta(), part->phi(), jet->eta(), jet->phi() ) < 0.4 ){ isIsolated = false; }
+                    } 
+                    // 2) Associated with gen quark (|pdgId|<7)
+                    //else if( abs(part->pdgId()) < 7 ){
+                    //  if( deltaR( part->eta(), part->phi(), jet->eta(), jet->phi() ) < 1.0 ){ isQ = true; }
+                    //}
+                  }
+                }
+                //If satisfies conditions and in acceptance then save gen jets to vector 
+                //if( isQ && isIsolated ){ 
+                if( isIsolated ){ 
+                  if( jet->pt() > 30. && abs(jet->eta()) < 4.7 ){ VBFGenJets.push_back( jet ); }
+                }
+              
+              }
+
+              //Extract generator level Higgs
+              edm::Ptr<reco::GenParticle> genHiggs;
+              for( unsigned int gen_idx = 0; gen_idx < genParticles->size(); gen_idx++ ){
+                edm::Ptr<reco::GenParticle> part = genParticles->ptrAt(gen_idx);
+                if( part->isHardProcess() && part->pdgId() == 25 ){ genHiggs = part; }
+              }
+
+              //Set variable for number of isolated gen jets in acceptance
+              gen_njets_vbfmva_ = VBFGenJets.size(); 
+            
+              //If genHiggs and lead and sublead jets passing acceptance:
+              if( genHiggs.isNonnull() && VBFGenJets.size() >= 2 ){
+                gen_dijet_Mjj_ = (VBFGenJets[0]->p4()+VBFGenJets[1]->p4()).mass();
+                gen_ptHjj_ = (genHiggs->p4()+VBFGenJets[0]->p4()+VBFGenJets[1]->p4()).pt();
+              }
+            }
+
             // First find dijet by looking for highest-pt jets...
             std::pair <int, int>     dijet_indices( -1, -1 );
             std::pair <float, float> dijet_pts( -1., -1. );
@@ -266,9 +350,8 @@ namespace flashgg {
                 //if (jet->puJetId(diPhotons[candIndex]) <  PuIDCutoff) {continue;}
                 if( _usePuJetID && !jet->passesPuJetId(diPhotons->ptrAt( candIndex ))){ continue;}
                 if( _useJetID ){
-                    if( _JetIDLevel == "Loose" && !jet->passesJetID  ( flashgg::Tight2017 ) ) continue;
+                    if( _JetIDLevel == "Loose" && !jet->passesJetID  ( flashgg::Loose ) ) continue;
                     if( _JetIDLevel == "Tight" && !jet->passesJetID  ( flashgg::Tight ) ) continue;
-                    if( _JetIDLevel == "Tight2017" && !jet->passesJetID (flashgg::Tight2017 ) ) continue;
                 }
                 // rms cuts over 2.5 
                 if( fabs( jet->eta() ) > 2.5 && jet->rms() > _rmsforwardCut ){ 
@@ -547,7 +630,12 @@ namespace flashgg {
             mvares.dijet_SubsubJPt = dijet_SubsubJPt_;
             mvares.dijet_subsubleadEta = dijet_subsubleadEta_;
 
-            mvares.ptHjj         = ptHjj_;
+            mvares.ptHjj = ptHjj_;
+
+            //STXS 1.1: gen info
+            mvares.gen_dijet_Mjj = gen_dijet_Mjj_;
+            mvares.gen_ptHjj = gen_ptHjj_;
+            mvares.gen_njets_vbfmva = gen_njets_vbfmva_;
             
             vbf_results->push_back( mvares );
         }

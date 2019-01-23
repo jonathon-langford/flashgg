@@ -33,7 +33,7 @@ elif os.environ["CMSSW_VERSION"].count("CMSSW_9_4"):
 else:
     raise Exception,"Could not find a sensible CMSSW_VERSION for default globaltag"
 
-process.maxEvents   = cms.untracked.PSet( input  = cms.untracked.int32( 50000 ) )
+process.maxEvents   = cms.untracked.PSet( input  = cms.untracked.int32( 10000 ) )
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 1000 )
 
 from flashgg.Systematics.SystematicsCustomize import *
@@ -188,8 +188,8 @@ from flashgg.MetaData.samples_utils import SamplesManager
 
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring(
-#"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIIFall17-3_1_0/3_1_0/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIIFall17-3_1_0-3_1_0-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/180605_202403/0000/myMicroAODOutputFile_24.root"
-"root://eoscms.cern.ch//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIIFall17-3_1_1/3_1_1/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIIFall17-3_1_1-3_1_1-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/180723_162219/0000/myMicroAODOutputFile_2.root"
+"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIIFall17-3_1_0/3_1_0/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIIFall17-3_1_0-3_1_0-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/180605_202403/0000/myMicroAODOutputFile_24.root"
+#"root://eoscms.cern.ch//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIIFall17-3_1_1/3_1_1/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIIFall17-3_1_1-3_1_1-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/180723_162219/0000/myMicroAODOutputFile_2.root"
 #"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIIFall17-3_1_0/3_1_0/DiPhotonJetsBox_MGG-80toInf_13TeV-Sherpa/RunIIFall17-3_1_0-3_1_0-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/180706_100515/0000/myMicroAODOutputFile_607.root"
 #"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIIFall17-3_1_0/3_1_0/DoubleEG/RunIIFall17-3_1_0-3_1_0-v0-Run2017B-31Mar2018-v1/180606_155530/0000/myMicroAODOutputFile_39.root"
                              )
@@ -287,6 +287,14 @@ all_variables.append("prefireProbability := weight(\"prefireProbability\")")
 
 if customize.processId != "Data":
     all_variables += minimalVariablesStage1
+    all_variables += [
+                     #STSX 1.1: gen-level quantities to define STXS 1.1 bin
+                    "gen_pTH        := tagTruth().HTXSpTH()",
+                    "n_gen_jets     := tagTruth().HTXSnjets()",
+                    "gen_dijet_Mjj  := VBFMVA().gen_dijet_Mjj",
+                    "gen_ptHjj      := VBFMVA().gen_ptHjj",
+                    "gen_njets_vbfmva := VBFMVA().gen_njets_vbfmva"
+    ]
 else:
     all_variables += minimalNonSignalVariables
 
