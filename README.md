@@ -1,6 +1,8 @@
 flashgg
 =======
 
+Just a quick test
+
 ## Branch to configure flashgg to STXS 1.1
 
 Before you start, **please take note** of these warnings and comments:
