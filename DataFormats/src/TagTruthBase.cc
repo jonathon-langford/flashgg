@@ -13,9 +13,9 @@ TagTruthBase *TagTruthBase::clone() const
     return result;
 }
 
-void TagTruthBase::setHTXSInfo( int stage0cat, int stage1cat, int njets, float pTH, float pTV ) {
+void TagTruthBase::setHTXSInfo( int stage0cat, int stage1_1cat, int njets, float pTH, float pTV ) {
     stage0cat_ = stage0cat;
-    stage1cat_ = stage1cat;
+    stage1_1cat_ = stage1_1cat;
     njets_ = njets;
     pTH_ = pTH;
     pTV_ = pTV;
@@ -23,7 +23,7 @@ void TagTruthBase::setHTXSInfo( int stage0cat, int stage1cat, int njets, float p
 
 void TagTruthBase::copyBaseInfo( const TagTruthBase &b ) {
     setGenPV( b.genPV() );
-    setHTXSInfo( b.HTXSstage0cat(), b.HTXSstage1cat(), b.HTXSnjets(), b.HTXSpTH(), b.HTXSpTV() );
+    setHTXSInfo( b.HTXSstage0cat(), b.HTXSstage1_1cat(), b.HTXSnjets(), b.HTXSpTH(), b.HTXSpTV() );
 }
 
 

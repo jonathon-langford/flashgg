@@ -15,24 +15,26 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 
 from Configuration.AlCa.GlobalTag import GlobalTag
-if   os.environ["CMSSW_VERSION"].count("CMSSW_7_6"):
-    process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
-elif os.environ["CMSSW_VERSION"].count("CMSSW_8_0"):
-    process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2'
-elif os.environ["CMSSW_VERSION"].count("CMSSW_8_0_20"):
-    process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2_v1'
-elif os.environ["CMSSW_VERSION"].count("CMSSW_8_0_25"):
-        process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
-elif os.environ["CMSSW_VERSION"].count("CMSSW_8_0_26"):
-        process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
-elif os.environ["CMSSW_VERSION"].count("CMSSW_7_4"):
-    process.GlobalTag.globaltag = '74X_mcRun2_asymptotic_v4'
-elif os.environ["CMSSW_VERSION"].count("CMSSW_9_4"):
-    process.GlobalTag.globaltag = '94X_mc2017_realistic_v12'
-else:
-    raise Exception,"Could not find a sensible CMSSW_VERSION for default globaltag"
+process.GlobalTag.globaltag = '94X_mcRun2_asymptotic_v3'
 
-process.maxEvents   = cms.untracked.PSet( input  = cms.untracked.int32( 50000 ) )
+#if   os.environ["CMSSW_VERSION"].count("CMSSW_7_6"):
+#   process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
+#elif os.environ["CMSSW_VERSION"].count("CMSSW_8_0"):
+#    process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2'
+#elif os.environ["CMSSW_VERSION"].count("CMSSW_8_0_20"):
+#    process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2_v1'
+#elif os.environ["CMSSW_VERSION"].count("CMSSW_8_0_25"):
+#        process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
+#elif os.environ["CMSSW_VERSION"].count("CMSSW_8_0_26"):
+#        process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
+#elif os.environ["CMSSW_VERSION"].count("CMSSW_7_4"):
+#    process.GlobalTag.globaltag = '74X_mcRun2_asymptotic_v4'
+#elif os.environ["CMSSW_VERSION"].count("CMSSW_9_4"):
+#    process.GlobalTag.globaltag = '94X_mc2017_realistic_v12'
+#else:
+#    raise Exception,"Could not find a sensible CMSSW_VERSION for default globaltag"
+
+process.maxEvents   = cms.untracked.PSet( input  = cms.untracked.int32( 100 ) )
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 1000 )
 
 from flashgg.Systematics.SystematicsCustomize import *
@@ -187,9 +189,10 @@ from flashgg.MetaData.samples_utils import SamplesManager
 
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring(
+"file:/afs/cern.ch/work/j/jlangfor/hgg/stxs1p1/CMSSW_10_2_9/src/flashgg/myMicroAODOutputFile.root"
 #"root://eoscms.cern.ch//eos/cms//store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170113_234241/0000/myMicroAODOutputFile_1.root"
-"root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIIFall17-3_0_0/3_0_0/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIIFall17-3_0_0-3_0_0-v0-RunIIFall17MiniAOD-\
-94X_mc2017_realistic_v10-v1/180325_165120/0000/myMicroAODOutputFile_59.root"
+#"root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIIFall17-3_0_0/3_0_0/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIIFall17-3_0_0-3_0_0-v0-RunIIFall17MiniAOD-\
+#94X_mc2017_realistic_v10-v1/180325_165120/0000/myMicroAODOutputFile_59.root"
                                  #"/store/group/phys_higgs/cmshgg/ferriff/flashgg/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2/2_3_0/QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8/RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2-2_3_0-v0-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/161114_094221/0000/myMicroAODOutputFile_62.root"
                                  #"/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/VBFHToGG_M125_13TeV_amcatnlo_pythia8_CUETP8M1Down/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/170114_093048/0000/myMicroAODOutputFile_2.root"
 #                                 "/store/group/phys_higgs/cmshgg/sethzenz/flashgg/RunIISummer16-2_4_1-25ns_Moriond17/2_4_1/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16-2_4_1-25ns_Moriond17-2_4_1-v0-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/170114_092925/0000/myMicroAODOutputFile_19.root"
@@ -381,7 +384,7 @@ print
 printSystematicInfo(process)
 
 # set default options if needed
-customize.setDefault("maxEvents"  ,10000   )
+customize.setDefault("maxEvents"  ,10   )
 customize.setDefault("targetLumi" ,1.00e+3)
 
 # call the customization

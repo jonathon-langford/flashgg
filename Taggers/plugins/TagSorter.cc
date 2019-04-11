@@ -330,7 +330,7 @@ namespace flashgg {
                                        *( pTV.product() ) );
             } else if ( htxsClassification.isValid() ) {
                 truth_obj.setHTXSInfo( htxsClassification->stage0_cat,
-                                       htxsClassification->stage1_cat_pTjet30GeV,
+                                       htxsClassification->stage1_1_cat_pTjet30GeV,
                                        htxsClassification->jets30.size(),
                                        htxsClassification->p4decay_higgs.pt(),
                                        htxsClassification->p4decay_V.pt() );

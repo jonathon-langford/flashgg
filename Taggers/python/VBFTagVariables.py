@@ -1,6 +1,7 @@
 stxs_truth_variables=[
     "HTXSstage0cat := tagTruth().HTXSstage0cat",
     "HTXSstage1cat := tagTruth().HTXSstage1cat",
+    "HTXSstage1_1cat := tagTruth().HTXSstage1_1cat",
     "HTXSnjets := tagTruth().HTXSnjets",
     "HTXSpTH := tagTruth().HTXSpTH",
     "HTXSpTV := tagTruth().HTXSpTV"
