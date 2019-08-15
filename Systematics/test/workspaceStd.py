@@ -688,7 +688,7 @@ process.flashggTagSorter.StoreOtherTagInfo = True
 process.flashggTagSorter.BlindedSelectionPrintout = True
 
 ### Rerun microAOD sequence on top of microAODs using the parent dataset
-runRivetSequence(process, customize.metaConditions)
+runRivetSequence(process, customize.metaConditions, customize.processId)
 
 
 #### BELOW HERE IS MOSTLY DEBUGGING STUFF
