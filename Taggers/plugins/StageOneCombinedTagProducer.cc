@@ -11,6 +11,7 @@
 #include "flashgg/DataFormats/interface/StageOneCombinedTag.h"
 #include "flashgg/DataFormats/interface/VBFMVAResult.h"
 #include "flashgg/DataFormats/interface/VHhadMVAResult.h"
+#include "flashgg/DataFormats/interface/GluGluHMVAResult.h"
 #include "DataFormats/Common/interface/RefToPtr.h"
 
 #include "flashgg/DataFormats/interface/PDFWeightObject.h"
@@ -34,6 +35,8 @@ namespace flashgg {
         void produce( Event &, const EventSetup & ) override;
         int chooseCategory( float );
         int computeStage1Kinematics( const StageOneCombinedTag );
+        float setEffectivePtH( const GluGluHMVAResult, float );
+        int setEffectiveNj( const GluGluHMVAResult, int );
 
         std::vector<double> rawDiphoBounds_, rawDijetBounds_, rawGghBounds_, rawVhHadBounds_;
         std::map<std::string, float> diphoBounds_, dijetBounds_, gghBounds_, vhHadBounds_;
@@ -42,6 +45,7 @@ namespace flashgg {
         EDGetTokenT<View<DiPhotonCandidate> >      diPhotonToken_;
         EDGetTokenT<View<VBFMVAResult> >           vbfMvaResultToken_;
         EDGetTokenT<View<VHhadMVAResult> >           vhHadMvaResultToken_;
+        EDGetTokenT<View<GluGluHMVAResult> >           gghMvaResultToken_;
         EDGetTokenT<View<DiPhotonMVAResult> >      mvaResultToken_;
         edm::EDGetTokenT<vector<flashgg::PDFWeightObject> > WeightToken_;
 
@@ -57,6 +61,7 @@ namespace flashgg {
         diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "DiPhotonTag" ) ) ),
         vbfMvaResultToken_( consumes<View<flashgg::VBFMVAResult> >( iConfig.getParameter<InputTag> ( "VBFMVAResultTag" ) ) ),
         vhHadMvaResultToken_( consumes<View<flashgg::VHhadMVAResult> >( iConfig.getParameter<InputTag> ( "VHhadMVAResultTag" ) ) ),
+        gghMvaResultToken_( consumes<View<flashgg::GluGluHMVAResult> >( iConfig.getParameter<InputTag> ( "GluGluHMVAResultTag" ) ) ),
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag> ( "MVAResultTag" ) ) ),
         WeightToken_( consumes<vector<flashgg::PDFWeightObject> >( iConfig.getUntrackedParameter<InputTag>( "WeightTag", InputTag( "flashggPDFWeightObject" ) ) ) ),
         systLabel_   ( iConfig.getParameter<string> ( "SystLabel" ) ),
@@ -90,6 +95,9 @@ namespace flashgg {
         Handle<View<flashgg::VHhadMVAResult> > vhHadMvaResults;
         evt.getByToken( vhHadMvaResultToken_, vhHadMvaResults );
 
+        Handle<View<flashgg::GluGluHMVAResult> > gghMvaResults;
+        evt.getByToken( gghMvaResultToken_, gghMvaResults );
+
         JetCollectionVector Jets( inputTagJets_.size() );
         for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
             evt.getByToken( tokenJets_[j], Jets[j] );
@@ -100,15 +108,17 @@ namespace flashgg {
         // We are relying on corresponding sets - update this to give an error/exception
         assert( diPhotons->size() == vbfMvaResults->size() ); 
         assert( diPhotons->size() == vhHadMvaResults->size() ); 
+        assert( diPhotons->size() == gghMvaResults->size() ); 
         assert( diPhotons->size() == mvaResults->size() );
 
         for( unsigned int candIndex = 0; candIndex < diPhotons->size() ; candIndex++ ) {
             edm::Ptr<flashgg::VBFMVAResult>           vbf_mvares      = vbfMvaResults->ptrAt( candIndex );
             edm::Ptr<flashgg::VHhadMVAResult>         vhHad_mvares    = vhHadMvaResults->ptrAt( candIndex );
+            edm::Ptr<flashgg::GluGluHMVAResult>         ggh_mvares    = gghMvaResults->ptrAt( candIndex );
             edm::Ptr<flashgg::DiPhotonMVAResult>      mvares          = mvaResults->ptrAt( candIndex );
             edm::Ptr<flashgg::DiPhotonCandidate>      dipho           = diPhotons->ptrAt( candIndex );
             
-            StageOneCombinedTag stage1tag_obj( dipho, mvares, vbf_mvares, vhHad_mvares );
+            StageOneCombinedTag stage1tag_obj( dipho, mvares, vbf_mvares, vhHad_mvares, ggh_mvares );
             stage1tag_obj.setDiPhotonIndex( candIndex );
             stage1tag_obj.setSystLabel( systLabel_ );
             stage1tag_obj.includeWeights( *dipho );
@@ -181,6 +191,11 @@ namespace flashgg {
         float subleadPToM = tag_obj.diPhotonMVA().subleadptom;
         edm::Ptr<flashgg::Jet> j0 = tag_obj.VBFMVA().leadJet_ptr; 
         edm::Ptr<flashgg::Jet> j1 = tag_obj.VBFMVA().subleadJet_ptr;
+
+        if ( mjj < 350. ) {
+            ptH = setEffectivePtH( tag_obj.GluGluHMVA(), ptH );
+            nJ  = setEffectiveNj(  tag_obj.GluGluHMVA(), nJ );
+        }
         
         if ( !j0.isNull() ) {
             if ( j0->pt() > 30. ) { nJ += 1; }
@@ -461,6 +476,90 @@ namespace flashgg {
         
         //finally pass back the chosen tag
         return chosenTag_;
+    }
+
+    float StageOneCombinedTagProducer::setEffectivePtH( const GluGluHMVAResult res, float ptH ) 
+    {
+        float val = -999.;
+        float maxProb = -1.;
+        if ( res.prob_0J_PTH_0_10() > maxProb ) {
+            val = 5.;
+            maxProb = res.prob_0J_PTH_0_10();
+        }
+        if ( res.prob_0J_PTH_GT10() > maxProb ) {
+            val = 15.;
+            maxProb = res.prob_0J_PTH_GT10();
+        }
+        if ( res.prob_1J_PTH_0_60() > maxProb ) {
+            val = 30.;
+            maxProb = res.prob_1J_PTH_0_60();
+        }
+        if ( res.prob_1J_PTH_60_120() > maxProb ) {
+            val = 90.;
+            maxProb = res.prob_1J_PTH_60_120();
+        }
+        if ( res.prob_1J_PTH_120_200() > maxProb ) {
+            val = 160.;
+            maxProb = res.prob_1J_PTH_120_200();
+        }
+        if ( res.prob_GE2J_MJJ_0_350_PTH_0_60() > maxProb ) {
+            val = 30.;
+            maxProb = res.prob_GE2J_MJJ_0_350_PTH_0_60();
+        }
+        if ( res.prob_GE2J_MJJ_0_350_PTH_60_120() > maxProb ) {
+            val = 90.;
+            maxProb = res.prob_GE2J_MJJ_0_350_PTH_60_120();
+        }
+        if ( res.prob_GE2J_MJJ_0_350_PTH_120_200() > maxProb ) {
+            val = 160.;
+            maxProb = res.prob_GE2J_MJJ_0_350_PTH_120_200();
+        }
+        if ( res.prob_PTH_GT200() > maxProb ) {
+            val = ptH;
+        }
+        return val;
+    }
+
+    int StageOneCombinedTagProducer::setEffectiveNj( const GluGluHMVAResult res, int nJ ) 
+    {
+        int val = -1;
+        float maxProb = -1.;
+        if ( res.prob_0J_PTH_0_10() > maxProb ) {
+            val = 0;
+            maxProb = res.prob_0J_PTH_0_10();
+        }
+        if ( res.prob_0J_PTH_GT10() > maxProb ) {
+            val = 0;
+            maxProb = res.prob_0J_PTH_GT10();
+        }
+        if ( res.prob_1J_PTH_0_60() > maxProb ) {
+            val = 1;
+            maxProb = res.prob_1J_PTH_0_60();
+        }
+        if ( res.prob_1J_PTH_60_120() > maxProb ) {
+            val = 1;
+            maxProb = res.prob_1J_PTH_60_120();
+        }
+        if ( res.prob_1J_PTH_120_200() > maxProb ) {
+            val = 1;
+            maxProb = res.prob_1J_PTH_120_200();
+        }
+        if ( res.prob_GE2J_MJJ_0_350_PTH_0_60() > maxProb ) {
+            val = 2;
+            maxProb = res.prob_GE2J_MJJ_0_350_PTH_0_60();
+        }
+        if ( res.prob_GE2J_MJJ_0_350_PTH_60_120() > maxProb ) {
+            val = 2;
+            maxProb = res.prob_GE2J_MJJ_0_350_PTH_60_120();
+        }
+        if ( res.prob_GE2J_MJJ_0_350_PTH_120_200() > maxProb ) {
+            val = 2;
+            maxProb = res.prob_GE2J_MJJ_0_350_PTH_120_200();
+        }
+        if ( res.prob_PTH_GT200() > maxProb ) {
+            val = nJ;
+        }
+        return val;
     }
 
     void StageOneCombinedTagProducer::constructBounds() 
