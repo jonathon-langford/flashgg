@@ -329,6 +329,9 @@ namespace  {
         edm::Wrapper<edm::Ptr<flashgg::PhotonJetCandidate> >       wrp_ptr_fgj_dip;
         std::vector<edm::Ptr<flashgg::PhotonJetCandidate> >        vec_ptr_fgj_dip;
         edm::Wrapper<std::vector<edm::Ptr<flashgg::PhotonJetCandidate> > >   wrp_vec_ptr_fgj_dip;
+
+        flashgg::TagCandidate                                        tags;
+        edm::Wrapper<flashgg::TagCandidate>                      wrp_tags;
         std::vector<flashgg::TagCandidate>                       vec_tags;
         edm::Wrapper<std::vector<flashgg::TagCandidate> >    wrp_vec_tags;
 
