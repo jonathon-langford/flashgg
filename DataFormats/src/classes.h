@@ -25,6 +25,7 @@
 #include "flashgg/DataFormats/interface/TTHDiLeptonTag.h"
 #include "flashgg/DataFormats/interface/VBFDiPhoDiJetMVAResult.h"
 #include "flashgg/DataFormats/interface/VBFMVAResult.h"
+#include "flashgg/DataFormats/interface/GluGluHMVAResult.h" //JDavies
 #include "flashgg/DataFormats/interface/VBFTag.h"
 #include "flashgg/DataFormats/interface/VHhadMVAResult.h"
 #include "flashgg/DataFormats/interface/VHHadronicTag.h"
@@ -178,6 +179,10 @@ namespace  {
         flashgg::VHhadMVAResult vhHad_res;
         std::vector<flashgg::VHhadMVAResult> vec_vhHad_res;
         edm::Wrapper<std::vector<flashgg::VHhadMVAResult> > wrp_vec_vhHad_res;
+
+        flashgg::GluGluHMVAResult ggh_res;
+        std::vector<flashgg::GluGluHMVAResult> vec_ggh_res;
+        edm::Wrapper<std::vector<flashgg::GluGluHMVAResult> > wrp_vec_ggh_res;
 
         flashgg::ZPlusJetTag zpj_res;
         std::vector<flashgg::ZPlusJetTag> vec_zpj_res;

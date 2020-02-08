@@ -55,11 +55,8 @@ class StageOneCustomize():
             #"stage1p1bin[50,-8.5,41.5] := tagTruth().HTXSstage1p1orderedBin"
             "stage1p2bin[57,-8.5,48.5] := tagTruth().HTXSstage1p2orderedBin"
         ]
-        ntup_variables = [
-            "CMS_hgg_mass[160,100,180]:=diPhoton().mass",
-            #"stage1p1bin[50,-8.5,41.5] := tagTruth().HTXSstage1p1orderedBin"
-            "stage1p2bin[57,-8.5,48.5] := tagTruth().HTXSstage1p2orderedBin"
-        ]
+
+        ntup_variables = ws_variables
     
         if self.customize.dumpWorkspace:
             return ws_variables
