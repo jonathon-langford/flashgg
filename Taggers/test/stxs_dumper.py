@@ -93,6 +93,8 @@ process.flashggTagSorter.TagPriorityRanges = cms.VPSet(
     cms.PSet(TagName = cms.InputTag('flashggVBFTag'))
 )
 
+process.flashggTagSorter.AddTruthInfo = cms.bool(False)
+
 #set the prefiring correctly 
 applyL1Prefiring = customizeForL1Prefiring(process, customize.metaConditions, customize.processId)
 
