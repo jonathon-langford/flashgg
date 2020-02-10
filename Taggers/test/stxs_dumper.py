@@ -259,11 +259,15 @@ new_variables = [
     "dijet_pt             := VBFMVA.dijet_pt",
 ]
 
+jet_vars = [
+    "ggH_nJets := GluGluHMVA.n_rec_jets",
+]
+
 matching_photon = [
-    "dijet_jet1_match := leadingJet_match",
-    "dijet_jet2_match := subLeadingJet_match",
-    "prompt_pho_1 := diPhoton.leadingPhoton.genMatchType()",
-    "prompt_pho_2 := diPhoton.subLeadingPhoton.genMatchType()"
+    "dijet_jet1_match := leadingjet_match",
+    "dijet_jet2_match := subleadingjet_match",
+    "prompt_pho_1 := diphoton.leadingphoton.genmatchtype()",
+    "prompt_pho_2 := diphoton.subleadingphoton.genmatchtype()"
 ]
 
 cloneTagSequenceForEachSystematic(process,
@@ -273,7 +277,7 @@ cloneTagSequenceForEachSystematic(process,
                                   jetSystematicsInputTags=jetSystematicsInputTags,
                                   ZPlusJetMode=2)
 
-all_variables = var.dipho_variables + var.dijet_variables + new_variables
+all_variables = var.dipho_variables + var.dijet_variables + new_variables + jet_vars
 
 if customize.processId != "Data":
     all_variables += matching_photon# + jet_syst_weights
