@@ -262,14 +262,49 @@ new_variables = [
 ]
 
 jet_vars = [
-    "ggH_nJets := GluGluHMVA.n_rec_jets",
+    "n_rec_jets               := GluGluHMVA.n_rec_jets",
+    "dijet_Mjj                := GluGluHMVA.dijet_Mjj",
+    "dijet_leadEta            := GluGluHMVA.dijet_leadEta",
+    "dijet_subleadEta         := GluGluHMVA.dijet_subleadEta",
+    "dijet_subsubleadEta      := GluGluHMVA.dijet_subsubleadEta",
+    "dijet_leadJPt            := GluGluHMVA.dijet_leadJPt",
+    "dijet_SubleadJPt         := GluGluHMVA.dijet_SubleadJPt",
+    "dijet_SubsubleadJPt      := GluGluHMVA.dijet_SubsubleadJPt",
+    "dijet_leadPUMVA          := GluGluHMVA.dijet_leadPUMVA",
+    "dijet_subleadPUMVA       := GluGluHMVA.dijet_subleadPUMVA",
+    "dijet_subsubleadPUMVA    := GluGluHMVA.dijet_subsubleadPUMVA",
+    "dijet_leadDeltaPhi       := GluGluHMVA.dijet_leadDeltaPhi",
+    "dijet_subleadDeltaPhi    := GluGluHMVA.dijet_subleadDeltaPhi",
+    "dijet_subsubleadDeltaPhi := GluGluHMVA.dijet_subsubleadDeltaPhi",
+    "dijet_leadDeltaEta       := GluGluHMVA.dijet_leadDeltaEta",
+    "dijet_subleadDeltaEta    := GluGluHMVA.dijet_subleadDeltaEta",
+    "dijet_subsubleadDeltaEta := GluGluHMVA.dijet_subsubleadDeltaEta",
+]
+
+ggH_mva_probs = [
+    "ggHMVAResult_prob_0J_PTH_0_10                := GluGluHMVA.ggHMVAResult_prob_0J_PTH_0_10()",
+    "ggHMVAResult_prob_0J_PTH_GT10                := GluGluHMVA.ggHMVAResult_prob_0J_PTH_GT10()",
+    "ggHMVAResult_prob_1J_PTH_0_60                := GluGluHMVA.ggHMVAResult_prob_1J_PTH_0_60()",
+    "ggHMVAResult_prob_1J_PTH_60_120              := GluGluHMVA.ggHMVAResult_prob_1J_PTH_60_120()",
+    "ggHMVAResult_prob_1J_PTH_120_200             := GluGluHMVA.ggHMVAResult_prob_1J_PTH_120_200()", 
+    "ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_0_60    := GluGluHMVA.ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_0_60()",
+    "ggHMVAResult_prob_GE3J_MJJ_0_350_PTH_60_120  := GluGluHMVA.ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_60_120()", 
+    "ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_120_200 := GluGluHMVA.ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_120_200()",
+    "ggHMVAResult_prob_PTH_GT200                  := GluGluHMVA.ggHMVAResult_prob_PTH_GT200()",
+]
+
+#also include the dijet 3 class probs
+VBF_mva_probs = [
+    "vbfMvaResult_prob_bkg := VBFMVA.vbfMvaResult_prob_bkg()",
+    "vbfMvaResult_prob_ggH := VBFMVA.vbfMvaResult_prob_ggH()",
+    "vbfMvaResult_prob_VBF := VBFMVA.vbfMvaResult_prob_VBF()",
 ]
 
 matching_photon = [
-    "dijet_jet1_match := leadingjet_match",
-    "dijet_jet2_match := subleadingjet_match",
-    "prompt_pho_1 := diphoton.leadingphoton.genmatchtype()",
-    "prompt_pho_2 := diphoton.subleadingphoton.genmatchtype()"
+    "dijet_jet1_match := leadingJet_match",
+    "dijet_jet2_match := subLeadingJet_match",
+    "prompt_pho_1 := diPhoton.leadingPhoton.genMatchType()",
+    "prompt_pho_2 := diPhoton.subLeadingPhoton.genMatchType()"
 ]
 
 cloneTagSequenceForEachSystematic(process,
@@ -279,7 +314,7 @@ cloneTagSequenceForEachSystematic(process,
                                   jetSystematicsInputTags=jetSystematicsInputTags,
                                   ZPlusJetMode=2)
 
-all_variables = var.dipho_variables + var.dijet_variables + new_variables + jet_vars
+all_variables = var.dipho_variables + var.dijet_variables + new_variables + jet_vars + ggH_mva_probs + VBF_mva_probs
 
 if customize.processId != "Data":
     all_variables += matching_photon# + jet_syst_weights

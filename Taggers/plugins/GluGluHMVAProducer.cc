@@ -425,15 +425,21 @@ namespace flashgg {
                 
                 //mvares.leadJet    = *Jets[jetCollectionIndex]->ptrAt( dijet_indices.first );
                 //mvares.subleadJet = *Jets[jetCollectionIndex]->ptrAt( dijet_indices.second );
-                mvares.leadJet        = dijetP4s.first;
-                mvares.subleadJet     = dijetP4s.second;
+                mvares.leadJet           = dijetP4s.first;
+                mvares.subleadJet        = dijetP4s.second;
+                mvares.dijet_leadEta     = dijetP4s.first.eta();
+                mvares.dijet_subleadEta  = dijetP4s.second.eta();
+                mvares.dijet_leadJPt     = dijetP4s.first.pt();
+                mvares.dijet_SubleadJPt  = dijetP4s.second.pt();
+                mvares.dijet_subleadEta = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->eta();
+                mvares.dijet_leadPUMVA   = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->puJetIdMVA();
+                mvares.dijet_leadDeltaPhi = deltaPhi( Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->phi(), (diPhotonP4s[0]+diPhotonP4s[1]).phi());
+                mvares.dijet_leadDeltaEta = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->eta() - (diPhotonP4s[0]+diPhotonP4s[1]).eta();
+                //mvares.dijet_subleadJPt_ = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->pt();
                 
                 mvares.leadJet_ptr    = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first );
                 mvares.subleadJet_ptr = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second );
 
-                dijet_leadPUMVA_       = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->puJetIdMVA();
-                dijet_leadDeltaPhi_    = deltaPhi( Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->phi(), (diPhotonP4s[0]+diPhotonP4s[1]).phi());
-                dijet_leadDeltaEta_    = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->eta() - (diPhotonP4s[0]+diPhotonP4s[1]).eta();
                 dijet_subleadPUMVA_    = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->puJetIdMVA();
                 dijet_subleadDeltaPhi_ = deltaPhi( Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->phi(), (diPhotonP4s[0]+diPhotonP4s[1]).phi());
                 dijet_subleadDeltaEta_ = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->eta() - (diPhotonP4s[0]+diPhotonP4s[1]).eta();
@@ -450,11 +456,6 @@ namespace flashgg {
             } else if (dijet_indices.first != -1) {
                 mvares.leadJet_ptr    = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first );
                 mvares.subleadJet_ptr = edm::Ptr<flashgg::Jet>();
-                dijet_leadEta_         = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->eta();
-                dijet_leadJPt_         = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->pt();
-                dijet_leadPUMVA_        = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->puJetIdMVA();
-                dijet_leadDeltaPhi_ = deltaPhi( Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->phi(), (diPhotonP4s[0]+diPhotonP4s[1]).phi());
-                dijet_leadDeltaEta_ = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->eta() - (diPhotonP4s[0]+diPhotonP4s[1]).eta();
             } else {
                 mvares.leadJet_ptr    = edm::Ptr<flashgg::Jet>();
                 mvares.subleadJet_ptr = edm::Ptr<flashgg::Jet>();
@@ -483,7 +484,17 @@ namespace flashgg {
                mvares.ggHMVAResult_prob_PTH_GT200 = ggHMva_->EvaluateMulticlass( 8, _MVAMethod.c_str() ); 
             }
 
-            
+            mvares.n_rec_jets = n_jets_count;            
+            mvares.dijet_Mjj =  dijet_Mjj_;
+            mvares.dijet_subsubleadEta =  dijet_subsubleadEta_;
+            mvares.dijet_SubsubleadJPt =  dijet_subsubleadJPt_;
+            mvares.dijet_subleadPUMVA = dijet_subleadPUMVA_;
+            mvares.dijet_subsubleadPUMVA =  dijet_subsubleadPUMVA_;
+            mvares.dijet_subleadDeltaPhi = dijet_subleadDeltaPhi_;
+            mvares.dijet_subsubleadDeltaPhi =  dijet_subsubleadDeltaPhi_;
+            mvares.dijet_subleadDeltaEta =  dijet_subleadDeltaEta_;
+            mvares.dijet_subsubleadDeltaEta = dijet_subsubleadDeltaEta_;
+
             ggH_results->push_back( mvares );
         }
         evt.put( std::move( ggH_results ) );

@@ -37,12 +37,12 @@ namespace flashgg {
         // Input variables - jets
         int n_rec_jets;
         int dijet_Mjj;
-        float dijet_leadEta ;
+        float dijet_leadEta;
         float dijet_subleadEta;
         float dijet_subsubleadEta;
-        float dijet_leadJPt ;
-        float dijet_SubleadJPt ;
-        float dijet_SubsubleadJPt ;
+        float dijet_leadJPt;
+        float dijet_SubleadJPt;
+        float dijet_SubsubleadJPt;
         float dijet_leadPUMVA;
         float dijet_subleadPUMVA;
         float dijet_subsubleadPUMVA;
