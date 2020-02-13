@@ -10,6 +10,7 @@
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "flashgg/DataFormats/interface/GluGluHMVAResult.h"
+#include "flashgg/DataFormats/interface/DiPhotonMVAResult.h"
 
 #include "TMVA/Reader.h"
 #include "TMath.h"
@@ -36,6 +37,7 @@ namespace flashgg {
         EDGetTokenT<View<DiPhotonCandidate> > diPhotonToken_;
         //EDGetTokenT<View<flashgg::Jet> > jetTokenDz_;
         std::vector<edm::InputTag> inputTagJets_;
+        EDGetTokenT<View<DiPhotonMVAResult> > diPhotonMVAToken_;
 
         unique_ptr<TMVA::Reader>ggHMva_;
         FileInPath ggHMVAweightfile_;
@@ -92,6 +94,7 @@ namespace flashgg {
         diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "DiPhotonTag" ) ) ),
         //jetTokenDz_( consumes<View<flashgg::Jet> >( iConfig.getParameter<InputTag>( "JetTag" ) ) ),
         inputTagJets_ ( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) ),
+        diPhotonMVAToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag> ( "DiPhotonMVATag" ) ) ),
         _MVAMethod    ( iConfig.getParameter<string> ( "MVAMethod"    ) ),
         _usePuJetID   ( iConfig.getParameter<bool>   ( "UsePuJetID"   ) ),
         _useJetID     ( iConfig.getParameter<bool>   ( "UseJetID"     ) ),
@@ -186,6 +189,9 @@ namespace flashgg {
     {
         Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
         evt.getByToken( diPhotonToken_, diPhotons );
+
+        Handle<View<flashgg::DiPhotonMVAResult> > diPhotonMVAResult;
+        evt.getByToken( diPhotonMVAToken_, diPhotonMVAResult );
 
         JetCollectionVector Jets( inputTagJets_.size() );
         for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
@@ -345,6 +351,7 @@ namespace flashgg {
                 if( hasValidVBFDiJet          && jet_3_index != -1          ) {hasValidVBFTriJet = 1;}
             }
 
+            n_rec_jets_ = n_jets_count;
             //Third jet deltaR cut and merge index finding
             int indexToMergeWithJ3(-1);
             //float thirdJetDRCut(1.8);
@@ -353,8 +360,26 @@ namespace flashgg {
             std::vector<reco::Candidate::LorentzVector> diPhotonP4s(2);
             std::vector<reco::Candidate::LorentzVector> jetP4s;
 
-            diPhotonP4s[0] = diPhotons->ptrAt( candIndex )->leadingPhoton()->p4(); 
-            diPhotonP4s[1] = diPhotons->ptrAt( candIndex )->subLeadingPhoton()->p4(); 
+            const flashgg::Photon *leadPhoton = diPhotons->ptrAt( candIndex )->leadingPhoton();
+            const flashgg::Photon *subLeadPhoton = diPhotons->ptrAt( candIndex )->subLeadingPhoton();
+
+            diPhotonP4s[0] = leadPhoton->p4(); 
+            diPhotonP4s[1] = subLeadPhoton->p4(); 
+            dipho_lead_ptoM_        = diPhotonP4s[0].pt()/(diPhotonP4s[0] + diPhotonP4s[1]).M();
+            dipho_sublead_ptoM_     = diPhotonP4s[1].pt()/(diPhotonP4s[0] + diPhotonP4s[1]).M();
+            dipho_leadEta_          = diPhotonP4s[0].eta();
+            dipho_subleadEta_       = diPhotonP4s[1].eta();
+            diphopt_                = (diPhotonP4s[0] + diPhotonP4s[1]).Pt();
+
+            // get trickier variables from diphoMVAResult object
+            CosPhi_                 = diPhotonMVAResult->at(candIndex).CosPhi;
+            sigmawv_                = diPhotonMVAResult->at(candIndex).sigmawv;
+            sigmarv_                = diPhotonMVAResult->at(candIndex).sigmarv;
+            vtxprob_                = diPhotonMVAResult->at(candIndex).vtxprob;
+            dipho_leadIDMVA_        = diPhotonMVAResult->at(candIndex).leadmva;
+            dipho_subleadIDMVA_     = diPhotonMVAResult->at(candIndex).subleadmva;
+
+
             if ( hasValidVBFDiJet ) {
                 jetP4s.push_back(Jets[jetCollectionIndex]->ptrAt(dijet_indices.first)->p4());
                 jetP4s.push_back(Jets[jetCollectionIndex]->ptrAt(dijet_indices.second)->p4());
@@ -417,32 +442,28 @@ namespace flashgg {
                 //std::cout << "DiphoDijet system pt, eta, phi = " << diphoDijetSystem.Pt() << ", " << diphoDijetSystem.Eta() << ", " << diphoDijetSystem.Phi() << std::endl;
                 //std::cout << "Dipho system cos theta star" << cosThetaStar_ << std::endl;
                 //dipho_PToM_       = (diPhotonP4s[0] + diPhotonP4s[1]).Pt()/(diPhotonP4s[0] + diPhotonP4s[1]).M();
-                dipho_lead_ptoM_        = diPhotonP4s[0].pt()/(diPhotonP4s[0] + diPhotonP4s[1]).M();
-                dipho_sublead_ptoM_     = diPhotonP4s[1].pt()/(diPhotonP4s[0] + diPhotonP4s[1]).M();
-                diphopt_                = (diPhotonP4s[0] + diPhotonP4s[1]).Pt();
+
+
                 
-                //std::cout << "Inside GluGluH producer, lead ptoM is:" << dipho_lead_ptoM_ << endl;
                 
                 //mvares.leadJet    = *Jets[jetCollectionIndex]->ptrAt( dijet_indices.first );
                 //mvares.subleadJet = *Jets[jetCollectionIndex]->ptrAt( dijet_indices.second );
                 mvares.leadJet           = dijetP4s.first;
                 mvares.subleadJet        = dijetP4s.second;
-                mvares.dijet_leadEta     = dijetP4s.first.eta();
-                mvares.dijet_subleadEta  = dijetP4s.second.eta();
-                mvares.dijet_leadJPt     = dijetP4s.first.pt();
-                mvares.dijet_SubleadJPt  = dijetP4s.second.pt();
-                mvares.dijet_subleadEta = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->eta();
-                mvares.dijet_leadPUMVA   = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->puJetIdMVA();
-                mvares.dijet_leadDeltaPhi = deltaPhi( Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->phi(), (diPhotonP4s[0]+diPhotonP4s[1]).phi());
-                mvares.dijet_leadDeltaEta = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->eta() - (diPhotonP4s[0]+diPhotonP4s[1]).eta();
-                //mvares.dijet_subleadJPt_ = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->pt();
+                dijet_leadEta_           = dijetP4s.first.eta();
+                dijet_subleadEta_        = dijetP4s.second.eta();
+                dijet_leadJPt_           = dijetP4s.first.pt();
+                dijet_subleadJPt_        = dijetP4s.second.pt();
+                dijet_leadPUMVA_         = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->puJetIdMVA();
+                dijet_subleadPUMVA_    = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->puJetIdMVA();
+                dijet_leadDeltaPhi_      = deltaPhi( Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->phi(), (diPhotonP4s[0]+diPhotonP4s[1]).phi());
+                dijet_subleadDeltaPhi_ = deltaPhi( Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->phi(), (diPhotonP4s[0]+diPhotonP4s[1]).phi());
+                dijet_leadDeltaEta_        = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->eta() - (diPhotonP4s[0]+diPhotonP4s[1]).eta();
+                dijet_subleadDeltaEta_ = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->eta() - (diPhotonP4s[0]+diPhotonP4s[1]).eta();
                 
                 mvares.leadJet_ptr    = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first );
                 mvares.subleadJet_ptr = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second );
 
-                dijet_subleadPUMVA_    = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->puJetIdMVA();
-                dijet_subleadDeltaPhi_ = deltaPhi( Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->phi(), (diPhotonP4s[0]+diPhotonP4s[1]).phi());
-                dijet_subleadDeltaEta_ = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second )->eta() - (diPhotonP4s[0]+diPhotonP4s[1]).eta();
 
                 if ( jet_3_index != -1 ) {
                   dijet_subsubleadPUMVA_    = Jets[jetCollectionIndex]->ptrAt( jet_3_index )->puJetIdMVA();
@@ -473,7 +494,6 @@ namespace flashgg {
             //Evaluate ggH BDT add store probs
             if (_MVAMethod == "Multi") {
                mvares.ggHMVAResult_prob_0J_PTH_0_10 = ggHMva_->EvaluateMulticlass( 0, _MVAMethod.c_str() ); 
-               //std::cout << "Inside GluGluH producer, class1 prob is:" << mvares.ggHMVAResult_prob_0J_PTH_0_10 << endl;
                mvares.ggHMVAResult_prob_0J_PTH_GT10 = ggHMva_->EvaluateMulticlass( 1, _MVAMethod.c_str() ); 
                mvares.ggHMVAResult_prob_1J_PTH_0_60 = ggHMva_->EvaluateMulticlass( 2, _MVAMethod.c_str() ); 
                mvares.ggHMVAResult_prob_1J_PTH_60_120 = ggHMva_->EvaluateMulticlass( 3, _MVAMethod.c_str() ); 
@@ -484,16 +504,29 @@ namespace flashgg {
                mvares.ggHMVAResult_prob_PTH_GT200 = ggHMva_->EvaluateMulticlass( 8, _MVAMethod.c_str() ); 
             }
 
-            mvares.n_rec_jets = n_jets_count;            
+            mvares.n_rec_jets = n_rec_jets_;            
             mvares.dijet_Mjj =  dijet_Mjj_;
+            mvares.dijet_leadEta     = dijet_leadEta_;
+            mvares.dijet_subleadEta  = dijet_subleadEta_;
             mvares.dijet_subsubleadEta =  dijet_subsubleadEta_;
+            mvares.dijet_leadJPt     = dijet_leadJPt_;
+            mvares.dijet_SubleadJPt  = dijet_subleadJPt_;
             mvares.dijet_SubsubleadJPt =  dijet_subsubleadJPt_;
+            mvares.dijet_leadPUMVA   = dijet_leadPUMVA_;
             mvares.dijet_subleadPUMVA = dijet_subleadPUMVA_;
             mvares.dijet_subsubleadPUMVA =  dijet_subsubleadPUMVA_;
+            mvares.dijet_leadDeltaPhi  = dijet_leadDeltaPhi_;
             mvares.dijet_subleadDeltaPhi = dijet_subleadDeltaPhi_;
             mvares.dijet_subsubleadDeltaPhi =  dijet_subsubleadDeltaPhi_;
+            mvares.dijet_leadDeltaEta  = dijet_leadDeltaEta_;
             mvares.dijet_subleadDeltaEta =  dijet_subleadDeltaEta_;
             mvares.dijet_subsubleadDeltaEta = dijet_subsubleadDeltaEta_;
+
+            mvares.dipho_lead_ptoM = dipho_lead_ptoM_;
+            mvares.dipho_sublead_ptoM = dipho_sublead_ptoM_; 
+            mvares.dipho_leadEta =  dipho_leadEta_;
+            mvares.dipho_subleadEta =  dipho_subleadEta_;       
+            mvares.diphopt =  diphopt_;       
 
             ggH_results->push_back( mvares );
         }
