@@ -13,6 +13,7 @@
 #include "flashgg/DataFormats/interface/VBFMVAResult.h"
 #include "flashgg/DataFormats/interface/VBFTag.h"
 #include "flashgg/DataFormats/interface/VBFTagTruth.h"
+#include "flashgg/DataFormats/interface/GluGluHMVAResult.h"
 
 #include "DataFormats/Common/interface/RefToPtr.h"
 
@@ -42,6 +43,7 @@ namespace flashgg {
         EDGetTokenT<View<VBFDiPhoDiJetMVAResult> > vbfDiPhoDiJetMvaResultToken_;
         EDGetTokenT<View<VBFMVAResult> >           vbfMvaResultToken_;
         EDGetTokenT<View<DiPhotonMVAResult> >      mvaResultToken_;
+        EDGetTokenT<View<GluGluHMVAResult> >       gghMvaResultToken_;
         EDGetTokenT<View<reco::GenParticle> >      genPartToken_;
         EDGetTokenT<View<reco::GenJet> >           genJetToken_;
         edm::EDGetTokenT<vector<flashgg::PDFWeightObject> > WeightToken_;
@@ -68,6 +70,7 @@ namespace flashgg {
         diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "DiPhotonTag" ) ) ),
         vbfDiPhoDiJetMvaResultToken_( consumes<View<flashgg::VBFDiPhoDiJetMVAResult> >( iConfig.getParameter<InputTag> ( "VBFDiPhoDiJetMVAResultTag" ) ) ),
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag> ( "MVAResultTag" ) ) ),
+        gghMvaResultToken_( consumes<View<flashgg::GluGluHMVAResult> >( iConfig.getParameter<InputTag> ( "GluGluHMVAResultTag" ) ) ),
         genPartToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
         genJetToken_ ( consumes<View<reco::GenJet> >( iConfig.getParameter<InputTag> ( "GenJetTag" ) ) ),
         WeightToken_( consumes<vector<flashgg::PDFWeightObject> >( iConfig.getUntrackedParameter<InputTag>( "WeightTag", InputTag( "flashggPDFWeightObject" ) ) ) ),
@@ -110,6 +113,9 @@ namespace flashgg {
         
         Handle<View<flashgg::VBFDiPhoDiJetMVAResult> > vbfDiPhoDiJetMvaResults;
         evt.getByToken( vbfDiPhoDiJetMvaResultToken_, vbfDiPhoDiJetMvaResults );
+
+        Handle<View<flashgg::GluGluHMVAResult> > ggH_mvaResults;
+        evt.getByToken( gghMvaResultToken_, ggH_mvaResults );
 
         Handle<View<reco::GenParticle> > genParticles;
         Handle<View<reco::GenJet> > genJets;
@@ -166,8 +172,9 @@ namespace flashgg {
             edm::Ptr<flashgg::VBFDiPhoDiJetMVAResult> vbfdipho_mvares = vbfDiPhoDiJetMvaResults->ptrAt( candIndex );
             edm::Ptr<flashgg::DiPhotonMVAResult>      mvares          = mvaResults->ptrAt( candIndex );
             edm::Ptr<flashgg::DiPhotonCandidate>      dipho           = diPhotons->ptrAt( candIndex );
+            edm::Ptr<flashgg::GluGluHMVAResult>       ggh_mvares      = ggH_mvaResults->ptrAt( candIndex );
             
-            VBFTag tag_obj( dipho, mvares, vbfdipho_mvares );
+            VBFTag tag_obj( dipho, mvares, vbfdipho_mvares, ggh_mvares);
             tag_obj.setDiPhotonIndex( candIndex );
             tag_obj.setSystLabel    ( systLabel_ );
 
