@@ -192,11 +192,6 @@ namespace flashgg {
         edm::Ptr<flashgg::Jet> j0 = tag_obj.VBFMVA().leadJet_ptr; 
         edm::Ptr<flashgg::Jet> j1 = tag_obj.VBFMVA().subleadJet_ptr;
 
-        if ( mjj < 350. ) {
-            ptH = setEffectivePtH( tag_obj.GluGluHMVA(), ptH );
-            nJ  = setEffectiveNj(  tag_obj.GluGluHMVA(), nJ );
-        }
-        
         if ( !j0.isNull() ) {
             if ( j0->pt() > 30. ) { nJ += 1; }
         }
@@ -207,6 +202,11 @@ namespace flashgg {
         if ( nJ >= 2 ) {
             mjj = ( j0->p4() + j1->p4() ).mass();
             ptHjj = ( j0->p4() + j1->p4() + tag_obj.diPhoton()->p4() ).pt();
+        }
+
+        if ( mjj < 350. ) {
+            ptH = setEffectivePtH( tag_obj.GluGluHMVA(), ptH );
+            nJ  = setEffectiveNj(  tag_obj.GluGluHMVA(), nJ );
         }
 
         // below assign the categories for ggH & VBF based on diphoton MVA score and dijet MVA score - boundaries taken from metaConditions
