@@ -59,9 +59,10 @@ class StageOneCustomize():
             "stage1p2bin[57,-8.5,48.5] := tagTruth().HTXSstage1p2orderedBin"
         ]
 
-        ntup_variables = ws_variables + [
-                                            "truthNNLOPS[1,-999999.,999999.]:=tagTruth().weight(\"NNLOPS\")"
-                                        ]
+        ntup_variables = ws_variables #+ [
+                                      #      "truthNNLOPS[1,-999999.,999999.]:=tagTruth().weight(\"NNLOPS\")",
+                                      #      "leadJetPt[1,-999999.,999999.]:=VBFMVA().dijet_LeadJPt"
+                                      #  ]
     
         if self.customize.dumpWorkspace:
             return ws_variables
