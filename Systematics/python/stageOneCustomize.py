@@ -59,7 +59,10 @@ class StageOneCustomize():
             "stage1p2bin[57,-8.5,48.5] := tagTruth().HTXSstage1p2orderedBin"
         ]
 
-        ntup_variables = ws_variables
+        ntup_variables = ws_variables #+ [
+                                      #      "truthNNLOPS[1,-999999.,999999.]:=tagTruth().weight(\"NNLOPS\")",
+                                      #      "leadJetPt[1,-999999.,999999.]:=VBFMVA().dijet_LeadJPt"
+                                      #  ]
     
         if self.customize.dumpWorkspace:
             return ws_variables
@@ -121,11 +124,6 @@ class StageOneCustomize():
             getattr(self.process, tag).ModifySystematicsWorkflow = cms.bool(True)
             getattr(self.process, tag).UseLargeMVAs = cms.bool(True) # enable memory-intensive MVAs
 
-        #print 'ED DEBUG process.p before was %s'%self.process.p
-        #print
-        #print 'ED DEBUG process.flashggSystTagMerger.src before was %s'%self.process.flashggSystTagMerger.src
-        #print
-    
         self.process.p.remove(self.process.flashggTagSorter)
         self.process.p.replace(self.process.flashggSystTagMerger, cms.Sequence(self.process.flashggTTHLeptonicTag + self.process.flashggTTHHadronicTag)*self.process.flashggTagSorter*self.process.flashggSystTagMerger)
     
@@ -143,8 +141,3 @@ class StageOneCustomize():
                 cms.PSet(TagName = cms.InputTag('flashggStageOneCombinedTag'+systlabel))
             )
             setattr(getattr(self.process, 'flashggTagSorter'+systlabel), 'TagPriorityRanges', modifiedPriorityRanges)
-
-        #print 'ED DEBUG process.p after is %s'%self.process.p
-        #print
-        #print 'ED DEBUG process.flashggSystTagMerger.src after is %s'%self.process.flashggSystTagMerger.src
-        #print

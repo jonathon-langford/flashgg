@@ -366,6 +366,9 @@ if is_signal:
             jetsystlabels.append("JEC%s01sigma" % direction)
             jetsystlabels.append("JER%s01sigma" % direction)
             jetsystlabels.append("PUJIDShift%s01sigma" % direction)
+            if customize.metaConditions['flashggJetSystematics']['doGranular']:
+                for sourceName in customize.metaConditions['flashggJetSystematics']['listOfSources']:
+                    jetsystlabels.append("JEC%s%s01sigma" % (str(sourceName),direction))
             metsystlabels.append("metJecUncertainty%s01sigma" % direction)
             metsystlabels.append("metJerUncertainty%s01sigma" % direction)
             metsystlabels.append("metPhoUncertainty%s01sigma" % direction)
@@ -451,6 +454,7 @@ from flashgg.MetaData.samples_utils import SamplesManager
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring(
                                  #"/store/user/spigazzi/flashgg/Era2016_RR-17Jul2018_v2/legacyRun2FullV1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/Era2016_RR-17Jul2018_v2-legacyRun2FullV1-v0-RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/190708_140500/0000/myMicroAODOutputFile_12.root"
+                                 #"/store/user/spigazzi/flashgg/Era2017_RR-31Mar2018_v2/legacyRun2FullV1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/Era2017_RR-31Mar2018_v2-legacyRun2FullV1-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190703_101705/0000/myMicroAODOutputFile_45.root"
                                  #"/store/user/spigazzi/flashgg/Era2018_RR-17Sep2018_v2/legacyRun2FullV2/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/Era2018_RR-17Sep2018_v2-legacyRun2FullV2-v0-RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190710_093150/0000/myMicroAODOutputFile_41.root"
                                  "/store/user/spigazzi/flashgg/Era2018_RR-17Sep2018_v2/legacyRun2FullV2/EGamma/Era2018_RR-17Sep2018_v2-legacyRun2FullV2-v0-Run2018A-17Sep2018-v2/190610_103420/0001/myMicroAODOutputFile_1125.root"
                              ))
@@ -621,10 +625,13 @@ process.load('flashgg/Systematics/flashggMetFilters_cfi')
 
 if customize.processId == "Data":
     metFilterSelector = "data"
+    filtersInputTag = cms.InputTag("TriggerResults", "", "RECO")
 else:
     metFilterSelector = "mc"
+    filtersInputTag = cms.InputTag("TriggerResults", "", "PAT")
 
 process.flashggMetFilters.requiredFilterNames = cms.untracked.vstring([filter.encode("ascii") for filter in customize.metaConditions["flashggMetFilters"][metFilterSelector]])
+process.flashggMetFilters.filtersInputTag = filtersInputTag
 
 if customize.tthTagsOnly:
     process.p = cms.Path(process.dataRequirements*
