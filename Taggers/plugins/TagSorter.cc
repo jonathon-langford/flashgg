@@ -286,6 +286,11 @@ namespace flashgg {
                             SelectedTag->back().includeWeights( truth );
                             if( debug_ ) {
                                 std::cout << "[TagSorter DEBUG] reweighing to NNLOPS, central weight being altered by a factor of " << truth.weight("NNLOPS") << std::endl;
+                            }
+                        }
+                        SelectedTagTruth->push_back( truth );
+                        SelectedTag->back().setTagTruth( edm::refToPtr( edm::Ref<edm::OwnVector<TagTruthBase> >( rTagTruth, 0 ) ) ); // Normally this 0 would be the index number
+                    }
                     else {
                         edm::Ptr<TagTruthBase> truth = TagVectorEntry->ptrAt( chosen_i )->tagTruth();
                         if( truth.isNonnull() ) {
