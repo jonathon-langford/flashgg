@@ -8,14 +8,15 @@ VBFTag::VBFTag() {}
 
 VBFTag::~VBFTag() {}
 
-VBFTag::VBFTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho, edm::Ptr<DiPhotonMVAResult> mvaRes, edm::Ptr<VBFDiPhoDiJetMVAResult> vbfDiPhoDiJet_mvaRes, edm::Ptr<GluGluHMVAResult> ggh_mvaRes) :
-    VBFTag::VBFTag( diPho, *mvaRes, *vbfDiPhoDiJet_mvaRes, *ggh_mvaRes) {}
+VBFTag::VBFTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho, edm::Ptr<DiPhotonMVAResult> mvaRes, edm::Ptr<VBFDiPhoDiJetMVAResult> vbfDiPhoDiJet_mvaRes, edm::Ptr<GluGluHMVAResult> ggh_mvaRes, edm::Ptr<VHhadMVAResult> vh_mvaRes) :
+    VBFTag::VBFTag( diPho, *mvaRes, *vbfDiPhoDiJet_mvaRes, *ggh_mvaRes, *vh_mvaRes) {}
 
-VBFTag::VBFTag( edm::Ptr<DiPhotonCandidate> dipho, DiPhotonMVAResult mvares, VBFDiPhoDiJetMVAResult vbfDiPhoDiJet_mvaRes, GluGluHMVAResult ggh_mvaRes ) :
+VBFTag::VBFTag( edm::Ptr<DiPhotonCandidate> dipho, DiPhotonMVAResult mvares, VBFDiPhoDiJetMVAResult vbfDiPhoDiJet_mvaRes, GluGluHMVAResult ggh_mvaRes, VHhadMVAResult vh_mvaRes) :
     DiPhotonTagBase::DiPhotonTagBase( dipho, mvares )
 {
     vbfDiPhoDiJet_mva_result_ = vbfDiPhoDiJet_mvaRes;
     ggh_mvaRes_ = ggh_mvaRes;
+    vh_mvaRes_  = vh_mvaRes;
     alphaUp_ = 0.;
     alphaDown_ = 0.;
     for (unsigned i = 0 ; i < 3 ; i++) {
@@ -40,6 +41,11 @@ const VBFMVAResult VBFTag::VBFMVA() const
 const GluGluHMVAResult VBFTag::GluGluHMVA() const
 {
     return ggh_mvaRes_;
+}
+
+const VHhadMVAResult VBFTag::VHhadMVA() const
+{
+    return vh_mvaRes_;
 }
 
 const reco::Candidate::LorentzVector VBFTag::leadingJet() const

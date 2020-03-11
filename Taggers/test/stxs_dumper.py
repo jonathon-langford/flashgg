@@ -196,7 +196,7 @@ from flashgg.MetaData.samples_utils import SamplesManager
 
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring(
-'root://xrootd-cms.infn.it//store/user/spigazzi/flashgg/Era2017_RR-31Mar2018_v2/legacyRun2FullV1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/Era2017_RR-31Mar2018_v2-legacyRun2FullV1-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190703_101705/0000/myMicroAODOutputFile_15.root'
+'/store/user/spigazzi/flashgg/Era2016_RR-17Jul2018_v2/legacyRun2FullV1/GluGluHToGG_M-125_13TeV_powheg_pythia8/Era2016_RR-17Jul2018_v2-legacyRun2FullV1-v0-RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/191111_133402/0000/myMicroAODOutputFile_10.root'
                              )
 )
 
@@ -293,11 +293,22 @@ ggH_mva_probs = [
     "ggHMVAResult_prob_PTH_GT200                  := GluGluHMVA.ggHMVAResult_prob_PTH_GT200()",
 ]
 
-#also include the dijet 3 class probs
 VBF_mva_probs = [
     "vbfMvaResult_prob_bkg := VBFMVA.vbfMvaResult_prob_bkg()",
     "vbfMvaResult_prob_ggH := VBFMVA.vbfMvaResult_prob_ggH()",
     "vbfMvaResult_prob_VBF := VBFMVA.vbfMvaResult_prob_VBF()",
+]
+
+vh_mva_inputs = [
+    "dijet_minDRJetPho    :=  VBFMVA.dijet_minDRJetPho",
+    "dijet_centrality_gg  :=  VBFMVA.dijet_centrality_gg",
+    "dijet_centrality_j3  :=  VBFMVA.dijet_centrality_j3",
+    "dijet_centrality_g   :=  VBFMVA.dijet_centrality_g ",
+    "cosThetaStar         :=  VHhadMVA.cosThetaStar",
+]
+
+vh_had_probs  = [
+    "VH_had_mvascore      := VHhadMVA.VHhadMVAValue()",
 ]
 
 matching_photon = [
@@ -314,7 +325,7 @@ cloneTagSequenceForEachSystematic(process,
                                   jetSystematicsInputTags=jetSystematicsInputTags,
                                   ZPlusJetMode=2)
 
-all_variables = var.dipho_variables + var.dijet_variables + new_variables + jet_vars + ggH_mva_probs + VBF_mva_probs
+all_variables = var.dipho_variables + var.dijet_variables + new_variables + jet_vars + ggH_mva_probs + VBF_mva_probs + vh_mva_inputs + vh_had_probs
 
 if customize.processId != "Data":
     all_variables += matching_photon# + jet_syst_weights

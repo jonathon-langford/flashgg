@@ -244,8 +244,9 @@ namespace flashgg {
             float phi2 = diPhotons->ptrAt( candIndex )->subLeadingPhoton()->phi();
             float eta2 = diPhotons->ptrAt( candIndex )->subLeadingPhoton()->eta();
             
-            bool hasValidVBFDiJet  = 0;
-            bool hasValidVBFTriJet = 0;
+            bool hasValidLeadJet  = 0;
+            bool hasValidVBFDiJet    = 0;
+            bool hasValidVBFTriJet   = 0;
             
             int  n_jets_count = 0;
             // take the jets corresponding to the diphoton candidate
@@ -305,6 +306,9 @@ namespace flashgg {
                 }
                 // within eta 4.7?
                 if( fabs( jet->eta() ) > 4.7 ) { continue; }
+               
+                // pt above 20 GeV?
+                if(  jet->pt()  < 20 ) { continue; }
 
                 // close to lead photon?
                 float dPhi = deltaPhi( jet->phi(), phi1 );
@@ -347,11 +351,13 @@ namespace flashgg {
                 }
                 if( jet->pt() > 30.0 ) n_jets_count++;
                 // if the jet's pt is neither higher than the lead jet or sublead jet, then forget it!
+                if(  dijet_indices.first != -1) {hasValidLeadJet = 1;}
                 if( dijet_indices.first != -1 && dijet_indices.second != -1 ) {hasValidVBFDiJet  = 1;}
                 if( hasValidVBFDiJet          && jet_3_index != -1          ) {hasValidVBFTriJet = 1;}
             }
 
             n_rec_jets_ = n_jets_count;
+
             //Third jet deltaR cut and merge index finding
             int indexToMergeWithJ3(-1);
             //float thirdJetDRCut(1.8);
@@ -379,6 +385,9 @@ namespace flashgg {
             dipho_leadIDMVA_        = diPhotonMVAResult->at(candIndex).leadmva;
             dipho_subleadIDMVA_     = diPhotonMVAResult->at(candIndex).subleadmva;
 
+            if ( hasValidLeadJet  ){
+                jetP4s.push_back(Jets[jetCollectionIndex]->ptrAt(dijet_indices.first)->p4());
+            }
 
             if ( hasValidVBFDiJet ) {
                 jetP4s.push_back(Jets[jetCollectionIndex]->ptrAt(dijet_indices.first)->p4());
@@ -403,6 +412,15 @@ namespace flashgg {
                 
                 //std::cout << "Third jet merge info:" << std::endl;
                 //std::cout << setw(12) << dR_13 << setw(12) << dR_23 << setw(12) << indexToMergeWithJ3 << std::endl;
+            }
+            if ( hasValidLeadJet ){
+                dijet_leadEta_           = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->eta();
+                dijet_leadJPt_           = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->pt();
+                dijet_leadPUMVA_         = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->puJetIdMVA();
+                dijet_leadDeltaPhi_      = deltaPhi( Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->phi(), (diPhotonP4s[0]+diPhotonP4s[1]).phi());
+                dijet_leadDeltaEta_      = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first )->eta() - (diPhotonP4s[0]+diPhotonP4s[1]).eta();
+                
+                mvares.leadJet_ptr    = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first );
             }
            
             if( hasValidVBFDiJet ) {
@@ -439,15 +457,7 @@ namespace flashgg {
                 //std::cout << "Dipho system pt, eta, phi = " << diphoSystem.Pt() << ", " << diphoSystem.Eta() << ", " << diphoSystem.Phi() << std::endl;
                 //std::cout << "DiphoDijet system pt, eta, phi = " << diphoDijetSystem.Pt() << ", " << diphoDijetSystem.Eta() << ", " << diphoDijetSystem.Phi() << std::endl;
                 diphoSystem.Boost( -diphoDijetSystem.BoostVector() );
-                //std::cout << "DiphoDijet system pt, eta, phi = " << diphoDijetSystem.Pt() << ", " << diphoDijetSystem.Eta() << ", " << diphoDijetSystem.Phi() << std::endl;
-                //std::cout << "Dipho system cos theta star" << cosThetaStar_ << std::endl;
-                //dipho_PToM_       = (diPhotonP4s[0] + diPhotonP4s[1]).Pt()/(diPhotonP4s[0] + diPhotonP4s[1]).M();
 
-
-                
-                
-                //mvares.leadJet    = *Jets[jetCollectionIndex]->ptrAt( dijet_indices.first );
-                //mvares.subleadJet = *Jets[jetCollectionIndex]->ptrAt( dijet_indices.second );
                 mvares.leadJet           = dijetP4s.first;
                 mvares.subleadJet        = dijetP4s.second;
                 dijet_leadEta_           = dijetP4s.first.eta();
@@ -463,7 +473,6 @@ namespace flashgg {
                 
                 mvares.leadJet_ptr    = Jets[jetCollectionIndex]->ptrAt( dijet_indices.first );
                 mvares.subleadJet_ptr = Jets[jetCollectionIndex]->ptrAt( dijet_indices.second );
-
 
                 if ( jet_3_index != -1 ) {
                   dijet_subsubleadPUMVA_    = Jets[jetCollectionIndex]->ptrAt( jet_3_index )->puJetIdMVA();
@@ -494,6 +503,7 @@ namespace flashgg {
             //Evaluate ggH BDT add store probs
             if (_MVAMethod == "Multi") {
                mvares.ggHMVAResult_prob_0J_PTH_0_10 = ggHMva_->EvaluateMulticlass( 0, _MVAMethod.c_str() ); 
+               // std::cout << "Inside GluGluH producer, class1 prob is:" << mvares.ggHMVAResult_prob_0J_PTH_0_10 << endl;
                mvares.ggHMVAResult_prob_0J_PTH_GT10 = ggHMva_->EvaluateMulticlass( 1, _MVAMethod.c_str() ); 
                mvares.ggHMVAResult_prob_1J_PTH_0_60 = ggHMva_->EvaluateMulticlass( 2, _MVAMethod.c_str() ); 
                mvares.ggHMVAResult_prob_1J_PTH_60_120 = ggHMva_->EvaluateMulticlass( 3, _MVAMethod.c_str() ); 
@@ -503,7 +513,6 @@ namespace flashgg {
                mvares.ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_120_200 = ggHMva_->EvaluateMulticlass( 7, _MVAMethod.c_str() ); 
                mvares.ggHMVAResult_prob_PTH_GT200 = ggHMva_->EvaluateMulticlass( 8, _MVAMethod.c_str() ); 
             }
-
             mvares.n_rec_jets = n_rec_jets_;            
             mvares.dijet_Mjj =  dijet_Mjj_;
             mvares.dijet_leadEta     = dijet_leadEta_;
