@@ -93,8 +93,12 @@ process.flashggTagSorter.TagPriorityRanges = cms.VPSet(
     cms.PSet(TagName = cms.InputTag('flashggVBFTag'))
 )
 
+process.flashggTagSorter.AddTruthInfo = cms.bool(False)
+
 #set the prefiring correctly 
 applyL1Prefiring = customizeForL1Prefiring(process, customize.metaConditions, customize.processId)
+
+from flashgg.Taggers.flashggVBFMVA_cff import pujidPtBin1_loose, pujidPtBin2_loose, pujidPtBin1_medium, pujidPtBin2_medium, pujidPtBin1_tight, pujidPtBin2_tight 
 
 mva_wp = {
     "none"  : [
@@ -103,39 +107,18 @@ mva_wp = {
         []
     ],
     "tight" : [
-        [0.69, -0.35, -0.26, -0.21],
-        [0.86, -0.1 , -0.05, -0.01],
-        [0.95,  0.28,  0.31,  0.28]
+        pujidPtBin1_tight,
+        pujidPtBin2_tight
     ],
     "medium": [
-        [0.18, -0.55, -0.42, -0.36],
-        [0.61, -0.35, -0.23, -0.17],
-        [0.87,  0.03,  0.13,  0.12]
+        pujidPtBin1_medium,
+        pujidPtBin2_medium
     ],
-    "loose" :[
-        [-0.97, -0.68, -0.53, -0.47],
-        [-0.89, -0.52, -0.38, -0.3 ],
-        [-0.56, -0.17, -0.04, -0.01],
-    ],
-    "forward_tight" : [
-        [-1, -0.35, -0.26, -0.21],
-        [-1, -0.1 , -0.05, -0.01],
-        [-1,  0.28,  0.31,  0.28]
-    ],
-    "forward_medium": [
-        [-1, -0.55, -0.42, -0.36],
-        [-1, -0.35, -0.23, -0.17],
-        [-1,  0.03,  0.13,  0.12]
-    ],
-    "forward_loose" :[
-        [-1, -0.68, -0.53, -0.47],
-        [-1, -0.52, -0.38, -0.3 ],
-        [-1, -0.17, -0.04, -0.01],
+    "loose" : [
+        pujidPtBin1_loose,
+        pujidPtBin2_loose
     ]
 }
-
-
-
 
 #== Only run systematics for signal events
 from flashgg.Taggers.flashggTags_cff import UnpackedJetCollectionVInputTag
@@ -194,7 +177,7 @@ from flashgg.MetaData.samples_utils import SamplesManager
 
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring(
-'root://xrootd-cms.infn.it//store/user/spigazzi/flashgg/Era2017_RR-31Mar2018_v2/legacyRun2FullV1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/Era2017_RR-31Mar2018_v2-legacyRun2FullV1-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190703_101705/0000/myMicroAODOutputFile_15.root'
+'/store/user/spigazzi/flashgg/Era2016_RR-17Jul2018_v2/legacyRun2FullV1/GluGluHToGG_M-125_13TeV_powheg_pythia8/Era2016_RR-17Jul2018_v2-legacyRun2FullV1-v0-RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/191111_133402/0000/myMicroAODOutputFile_10.root'
                              )
 )
 
@@ -224,7 +207,6 @@ process.flashggVBFTag.RequireVBFPreselection = cms.bool(False)
 process.flashggVBFMVA.rmsforwardCut = cms.double(customize.forwardJetRMSCut)
 process.flashggVBFMVA.pujidWpPtBin1 = cms.vdouble(mva_wp[customize.pujidWP][0])
 process.flashggVBFMVA.pujidWpPtBin2 = cms.vdouble(mva_wp[customize.pujidWP][1])
-process.flashggVBFMVA.pujidWpPtBin3 = cms.vdouble(mva_wp[customize.pujidWP][2])
 # Print to user
 print '------------------------------------------------------------'
 print ' PUJID Working point    ::' , customize.pujidWP
@@ -259,6 +241,56 @@ new_variables = [
     "dijet_pt             := VBFMVA.dijet_pt",
 ]
 
+jet_vars = [
+    "n_rec_jets               := GluGluHMVA.n_rec_jets",
+    "dijet_Mjj                := GluGluHMVA.dijet_Mjj",
+    "dijet_leadEta            := GluGluHMVA.dijet_leadEta",
+    "dijet_subleadEta         := GluGluHMVA.dijet_subleadEta",
+    "dijet_subsubleadEta      := GluGluHMVA.dijet_subsubleadEta",
+    "dijet_leadJPt            := GluGluHMVA.dijet_leadJPt",
+    "dijet_SubleadJPt         := GluGluHMVA.dijet_SubleadJPt",
+    "dijet_SubsubleadJPt      := GluGluHMVA.dijet_SubsubleadJPt",
+    "dijet_leadPUMVA          := GluGluHMVA.dijet_leadPUMVA",
+    "dijet_subleadPUMVA       := GluGluHMVA.dijet_subleadPUMVA",
+    "dijet_subsubleadPUMVA    := GluGluHMVA.dijet_subsubleadPUMVA",
+    "dijet_leadDeltaPhi       := GluGluHMVA.dijet_leadDeltaPhi",
+    "dijet_subleadDeltaPhi    := GluGluHMVA.dijet_subleadDeltaPhi",
+    "dijet_subsubleadDeltaPhi := GluGluHMVA.dijet_subsubleadDeltaPhi",
+    "dijet_leadDeltaEta       := GluGluHMVA.dijet_leadDeltaEta",
+    "dijet_subleadDeltaEta    := GluGluHMVA.dijet_subleadDeltaEta",
+    "dijet_subsubleadDeltaEta := GluGluHMVA.dijet_subsubleadDeltaEta",
+]
+
+ggH_mva_probs = [
+    "ggHMVAResult_prob_0J_PTH_0_10                := GluGluHMVA.ggHMVAResult_prob_0J_PTH_0_10()",
+    "ggHMVAResult_prob_0J_PTH_GT10                := GluGluHMVA.ggHMVAResult_prob_0J_PTH_GT10()",
+    "ggHMVAResult_prob_1J_PTH_0_60                := GluGluHMVA.ggHMVAResult_prob_1J_PTH_0_60()",
+    "ggHMVAResult_prob_1J_PTH_60_120              := GluGluHMVA.ggHMVAResult_prob_1J_PTH_60_120()",
+    "ggHMVAResult_prob_1J_PTH_120_200             := GluGluHMVA.ggHMVAResult_prob_1J_PTH_120_200()", 
+    "ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_0_60    := GluGluHMVA.ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_0_60()",
+    "ggHMVAResult_prob_GE3J_MJJ_0_350_PTH_60_120  := GluGluHMVA.ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_60_120()", 
+    "ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_120_200 := GluGluHMVA.ggHMVAResult_prob_GE2J_MJJ_0_350_PTH_120_200()",
+    "ggHMVAResult_prob_PTH_GT200                  := GluGluHMVA.ggHMVAResult_prob_PTH_GT200()",
+]
+
+VBF_mva_probs = [
+    "vbfMvaResult_prob_bkg := VBFMVA.vbfMvaResult_prob_bkg()",
+    "vbfMvaResult_prob_ggH := VBFMVA.vbfMvaResult_prob_ggH()",
+    "vbfMvaResult_prob_VBF := VBFMVA.vbfMvaResult_prob_VBF()",
+]
+
+vh_mva_inputs = [
+    "dijet_minDRJetPho    :=  VBFMVA.dijet_minDRJetPho",
+    "dijet_centrality_gg  :=  VBFMVA.dijet_centrality_gg",
+    "dijet_centrality_j3  :=  VBFMVA.dijet_centrality_j3",
+    "dijet_centrality_g   :=  VBFMVA.dijet_centrality_g ",
+    "cosThetaStar         :=  VHhadMVA.cosThetaStar",
+]
+
+vh_had_probs  = [
+    "VH_had_mvascore      := VHhadMVA.VHhadMVAValue()",
+]
+
 matching_photon = [
     "dijet_jet1_match := leadingJet_match",
     "dijet_jet2_match := subLeadingJet_match",
@@ -273,7 +305,7 @@ cloneTagSequenceForEachSystematic(process,
                                   jetSystematicsInputTags=jetSystematicsInputTags,
                                   ZPlusJetMode=2)
 
-all_variables = var.dipho_variables + var.dijet_variables + new_variables
+all_variables = var.dipho_variables + var.dijet_variables + new_variables + jet_vars + ggH_mva_probs + VBF_mva_probs + vh_mva_inputs + vh_had_probs
 
 if customize.processId != "Data":
     all_variables += matching_photon# + jet_syst_weights

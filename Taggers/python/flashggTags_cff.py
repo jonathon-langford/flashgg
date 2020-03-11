@@ -118,13 +118,17 @@ flashggTTHHadronicTag = cms.EDProducer("FlashggTTHHadronicTagProducer",
 
 
 
+from flashgg.Taggers.flashggTagSorter_cfi import HTXSInputTags
 flashggVBFTag = cms.EDProducer("FlashggVBFTagProducer",
                                DiPhotonTag=cms.InputTag('flashggPreselectedDiPhotons'),
                                SystLabel=cms.string(""),
                                MVAResultTag=cms.InputTag('flashggDiPhotonMVA'),
                                VBFDiPhoDiJetMVAResultTag=cms.InputTag('flashggVBFDiPhoDiJetMVA'),
+                               GluGluHMVAResultTag=cms.InputTag('flashggGluGluHMVA'),
+                               VHhadMVATag=cms.InputTag('flashggVHhadMVA'),
                                VBFMVAResultTag=cms.InputTag('flashggVBFMVA'),
                                GenParticleTag=cms.InputTag( "flashggPrunedGenParticles" ),
+                               HTXSTags = HTXSInputTags,
                                GenJetTag = cms.InputTag("slimmedGenJets"),
                                #Boundaries=cms.vdouble(0.21,0.6,0.81)
                                #  for the moment we have two categories VBF-0 and VBF-1: to be changed when the diphoton MVA is ready 

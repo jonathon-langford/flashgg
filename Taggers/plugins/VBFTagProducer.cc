@@ -13,8 +13,12 @@
 #include "flashgg/DataFormats/interface/VBFMVAResult.h"
 #include "flashgg/DataFormats/interface/VBFTag.h"
 #include "flashgg/DataFormats/interface/VBFTagTruth.h"
+#include "flashgg/DataFormats/interface/GluGluHMVAResult.h"
+#include "flashgg/DataFormats/interface/VHhadMVAResult.h"
 
 #include "DataFormats/Common/interface/RefToPtr.h"
+
+#include "SimDataFormats/HTXS/interface/HiggsTemplateCrossSections.h"
 
 #include "flashgg/DataFormats/interface/PDFWeightObject.h"
 
@@ -40,9 +44,13 @@ namespace flashgg {
         EDGetTokenT<View<VBFDiPhoDiJetMVAResult> > vbfDiPhoDiJetMvaResultToken_;
         EDGetTokenT<View<VBFMVAResult> >           vbfMvaResultToken_;
         EDGetTokenT<View<DiPhotonMVAResult> >      mvaResultToken_;
+        EDGetTokenT<View<GluGluHMVAResult> >       gghMvaResultToken_;
+        EDGetTokenT<View<VHhadMVAResult> >         VHhadMVAResultToken_;
         EDGetTokenT<View<reco::GenParticle> >      genPartToken_;
         EDGetTokenT<View<reco::GenJet> >           genJetToken_;
         edm::EDGetTokenT<vector<flashgg::PDFWeightObject> > WeightToken_;
+
+        EDGetTokenT<HTXS::HiggsClassification> newHTXSToken_;
 
         string systLabel_;
 
@@ -64,6 +72,8 @@ namespace flashgg {
         diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "DiPhotonTag" ) ) ),
         vbfDiPhoDiJetMvaResultToken_( consumes<View<flashgg::VBFDiPhoDiJetMVAResult> >( iConfig.getParameter<InputTag> ( "VBFDiPhoDiJetMVAResultTag" ) ) ),
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag> ( "MVAResultTag" ) ) ),
+        gghMvaResultToken_( consumes<View<flashgg::GluGluHMVAResult> >( iConfig.getParameter<InputTag> ( "GluGluHMVAResultTag" ) ) ),
+        VHhadMVAResultToken_( consumes<View<flashgg::VHhadMVAResult> >( iConfig.getParameter<InputTag> ( "VHhadMVATag" ) ) ),
         genPartToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
         genJetToken_ ( consumes<View<reco::GenJet> >( iConfig.getParameter<InputTag> ( "GenJetTag" ) ) ),
         WeightToken_( consumes<vector<flashgg::PDFWeightObject> >( iConfig.getUntrackedParameter<InputTag>( "WeightTag", InputTag( "flashggPDFWeightObject" ) ) ) ),
@@ -79,8 +89,11 @@ namespace flashgg {
         boundaries = iConfig.getParameter<vector<double > >( "Boundaries" );
         assert( is_sorted( boundaries.begin(), boundaries.end() ) ); // we are counting on ascending order - update this to give an error message or exception
 
+        ParameterSet HTXSps = iConfig.getParameterSet( "HTXSTags" );
+        newHTXSToken_ = consumes<HTXS::HiggsClassification>( HTXSps.getParameter<InputTag>("ClassificationObj") );
+
         produces<vector<VBFTag> >();
-        //produces<vector<VBFTagTruth> >();
+        produces<vector<VBFTagTruth> >();
     }
 
     int VBFTagProducer::chooseCategory( float mvavalue )
@@ -104,6 +117,12 @@ namespace flashgg {
         Handle<View<flashgg::VBFDiPhoDiJetMVAResult> > vbfDiPhoDiJetMvaResults;
         evt.getByToken( vbfDiPhoDiJetMvaResultToken_, vbfDiPhoDiJetMvaResults );
 
+        Handle<View<flashgg::GluGluHMVAResult> > ggH_mvaResults;
+        evt.getByToken( gghMvaResultToken_, ggH_mvaResults );
+
+        Handle<View<flashgg::VHhadMVAResult> > VHhadMVAResults;
+        evt.getByToken( VHhadMVAResultToken_, VHhadMVAResults );
+
         Handle<View<reco::GenParticle> > genParticles;
         Handle<View<reco::GenJet> > genJets;
         
@@ -112,11 +131,14 @@ namespace flashgg {
             evt.getByToken( WeightToken_, WeightHandle );
         }
 
-        std::unique_ptr<vector<VBFTag> >      tags  ( new vector<VBFTag> );
-        //std::unique_ptr<vector<VBFTagTruth> > truths( new vector<VBFTagTruth> );
+        Handle<HTXS::HiggsClassification> htxsClassification;
+        evt.getByToken(newHTXSToken_,htxsClassification);
 
-        //unsigned int idx = 0;
-        //edm::RefProd<vector<VBFTagTruth> > rTagTruth = evt.getRefBeforePut<vector<VBFTagTruth> >();
+        std::unique_ptr<vector<VBFTag> >      tags  ( new vector<VBFTag> );
+        std::unique_ptr<vector<VBFTagTruth> > truths( new vector<VBFTagTruth> );
+
+        unsigned int idx = 0;
+        edm::RefProd<vector<VBFTagTruth> > rTagTruth = evt.getRefBeforePut<vector<VBFTagTruth> >();
 
         unsigned int index_leadq       = std::numeric_limits<unsigned int>::max();
         unsigned int index_subleadq    = std::numeric_limits<unsigned int>::max();
@@ -156,8 +178,13 @@ namespace flashgg {
             edm::Ptr<flashgg::VBFDiPhoDiJetMVAResult> vbfdipho_mvares = vbfDiPhoDiJetMvaResults->ptrAt( candIndex );
             edm::Ptr<flashgg::DiPhotonMVAResult>      mvares          = mvaResults->ptrAt( candIndex );
             edm::Ptr<flashgg::DiPhotonCandidate>      dipho           = diPhotons->ptrAt( candIndex );
+            edm::Ptr<flashgg::GluGluHMVAResult>       ggh_mvares      = ggH_mvaResults->ptrAt( candIndex );
+            edm::Ptr<flashgg::VHhadMVAResult>         vhHad_mvares    = VHhadMVAResults->ptrAt(candIndex);
+
+            //std::cout << "vh had costheta star is: " << VHhadMVAResults->at(candIndex).cosThetaStar << std::endl;
+            //std::cout << "vh had costheta star is: " << VHhadMVAResults->at(candIndex).VHhadMVAValue() << std::endl;
             
-            VBFTag tag_obj( dipho, mvares, vbfdipho_mvares );
+            VBFTag tag_obj( dipho, mvares, vbfdipho_mvares, ggh_mvares, vhHad_mvares);
             tag_obj.setDiPhotonIndex( candIndex );
             tag_obj.setSystLabel    ( systLabel_ );
 
@@ -291,6 +318,18 @@ namespace flashgg {
             float dr_gj_subleadjet = 999.;
             VBFTagTruth truth_obj;
             if( ! evt.isRealData() ) {
+                // add HTXS info here
+                if( htxsClassification.isValid() ) { 
+                    truth_obj.setHTXSInfo( int(htxsClassification->stage0_cat),
+                                       int(htxsClassification->stage1_cat_pTjet30GeV),
+                                       int(htxsClassification->stage1_1_cat_pTjet30GeV),
+                                       int(htxsClassification->stage1_1_fine_cat_pTjet30GeV),
+                                       int(htxsClassification->stage1_2_cat_pTjet30GeV),
+                                       int(htxsClassification->stage1_2_fine_cat_pTjet30GeV),
+                                       float(htxsClassification->jets30.size()),
+                                       float(htxsClassification->p4decay_higgs.pt()),
+                                       float(htxsClassification->p4decay_V.pt()) );
+                }
                 for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
                     edm::Ptr<reco::GenParticle> part = genParticles->ptrAt( genLoop );
                     if( part->isHardProcess() ) {
@@ -537,15 +576,15 @@ namespace flashgg {
             // saving the collection
             if( VBFpresel && tag_obj.categoryNumber() >= 0 ) {
                 tags->push_back( tag_obj );
-                //if( ! evt.isRealData() ) {
-                //    truths->push_back( truth_obj );
-                //    tags->back().setTagTruth( edm::refToPtr( edm::Ref<vector<VBFTagTruth> >( rTagTruth, idx++ ) ) );
-                //}
+                if( ! evt.isRealData() ) {
+                    truths->push_back( truth_obj );
+                    tags->back().setTagTruth( edm::refToPtr( edm::Ref<vector<VBFTagTruth> >( rTagTruth, idx++ ) ) );
+                }
             }
         }
 
         evt.put( std::move( tags ) );
-        //evt.put( std::move( truths ) );
+        evt.put( std::move( truths ) );
     }
 }
 
