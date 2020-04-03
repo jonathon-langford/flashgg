@@ -557,7 +557,9 @@ namespace flashgg {
             maxProb = res.prob_GE2J_MJJ_0_350_PTH_120_200();
         }
         if ( res.prob_PTH_GT200() > maxProb ) {
-            val = ptH;
+            if (ptH < 200.) { val = 250.; }
+            else { val = ptH; }
+            maxProb = res.prob_PTH_GT200();
         }
         return val;
     }
@@ -600,6 +602,7 @@ namespace flashgg {
         }
         if ( res.prob_PTH_GT200() > maxProb ) {
             val = nJ;
+            maxProb = res.prob_PTH_GT200();
         }
         return val;
     }
