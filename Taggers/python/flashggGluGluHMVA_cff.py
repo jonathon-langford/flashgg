@@ -29,5 +29,5 @@ flashggGluGluHMVA = cms.EDProducer('FlashggGluGluHMVAProducer',
                                #vbfMVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVAClassification_dijetMVA_76x_24_02_15_BDTG.weights.xml"),
                                #vbfMVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVA_classification_dijet-mva-80x-ICHEP-v04.weights.xml"),
 #                               vbfMVAweightfile = cms.FileInPath("flashgg/Taggers/data/sklearn_training_moriond17_v8.xml"),
-                               ggHMVAweightfile = cms.FileInPath("flashgg/Taggers/data/nClassesGGHModel.xml")
+                               ggHMVAweightfile = cms.FileInPath("flashgg/Taggers/data/STXSmodels/nClassesGGHModel.xml")
 )
