@@ -21,8 +21,11 @@ def flashggPrepareTagSequence(process, options):
         flashggVBFMVA.vbfMVAweightfile = cms.FileInPath(str(options["flashggVBFMVA"]["weightFile"]))
         flashggVBFMVA.JetIDLevel = cms.string(str(options["flashggVBFMVA"]["jetID"]))
     if "flashggVHhadMVA" in options:
-        flashggVHhadMVA.vbfMVAweightfile = cms.FileInPath(str(options["flashggVHhadMVA"]["weightFile"]))
+        flashggVHhadMVA.vhHadMVAweightfile = cms.FileInPath(str(options["flashggVHhadMVA"]["weightFile"]))
         flashggVHhadMVA.JetIDLevel = cms.string(str(options["flashggVHhadMVA"]["jetID"]))
+    if "flashggGluGluHMVA" in options:
+        flashggGluGluHMVA.ggHMVAweightfile = cms.FileInPath(str(options["flashggGluGluHMVA"]["weightFile"]))
+        flashggGluGluHMVA.JetIDLevel = cms.string(str(options["flashggGluGluHMVA"]["jetID"]))
 
     flashggTHQLeptonicTag.thqCatweightfile_ForNonPeakingBkg = cms.FileInPath(str(options['THQLeptonicTag']['MVAweights_VsAllBkg']))
     flashggTHQLeptonicTag.MVAThreshold_ForNonPeakingBkg = cms.double(options['THQLeptonicTag']['MVAThreshold_VsAllBkg'])
