@@ -53,7 +53,6 @@ namespace flashgg {
         
         std::vector<double> _pujid_wp_pt_bin_1;
         std::vector<double> _pujid_wp_pt_bin_2;
-        std::vector<double> _pujid_wp_pt_bin_3;
         
         typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
         
@@ -105,8 +104,7 @@ namespace flashgg {
         _minDijetMinv ( iConfig.getParameter<double> ( "MinDijetMinv" ) ),
         _drJetPhoton  ( iConfig.getParameter<double> ( "DrJetPhoton"  ) ),
         _pujid_wp_pt_bin_1  ( iConfig.getParameter<std::vector<double> > ( "pujidWpPtBin1" ) ),
-        _pujid_wp_pt_bin_2  ( iConfig.getParameter<std::vector<double> > ( "pujidWpPtBin2" ) ),
-        _pujid_wp_pt_bin_3  ( iConfig.getParameter<std::vector<double> > ( "pujidWpPtBin3" ) )
+        _pujid_wp_pt_bin_2  ( iConfig.getParameter<std::vector<double> > ( "pujidWpPtBin2" ) )
     {
         ggHMVAweightfile_ = iConfig.getParameter<edm::FileInPath>( "ggHMVAweightfile" );
         
@@ -144,24 +142,23 @@ namespace flashgg {
         if (_MVAMethod == "Multi"){
             ggHMva_.reset( new TMVA::Reader( "!Color:Silent" ) );
 
-            ggHMva_->AddVariable( "n_jet_30"                  , &n_rec_jets_          );
-            ggHMva_->AddVariable( "dijet_Mjj"                 , &dijet_Mjj_          );
-            ggHMva_->AddVariable( "dijet_leadEta"             , &dijet_leadEta_        );
-            ggHMva_->AddVariable( "dijet_subleadEta"          , &dijet_subleadEta_     );
-            ggHMva_->AddVariable( "dijet_subsubleadEta"       , &dijet_subsubleadEta_  );
-            ggHMva_->AddVariable( "dijet_LeadJPt"             , &dijet_leadJPt_        );
-            ggHMva_->AddVariable( "dijet_SubJPt"          , &dijet_subleadJPt_     );
-            ggHMva_->AddVariable( "dijet_SubsubJPt"       , &dijet_subsubleadJPt_  );
-            ggHMva_->AddVariable( "dijet_leadPUMVA"           , &dijet_leadPUMVA_        );
-            ggHMva_->AddVariable( "dijet_subleadPUMVA"        , &dijet_subleadPUMVA_     );
-            ggHMva_->AddVariable( "dijet_subsubleadPUMVA"     , &dijet_subsubleadPUMVA_  );
-            ggHMva_->AddVariable( "dijet_leadDeltaPhi"        , &dijet_leadDeltaPhi_        );
-            ggHMva_->AddVariable( "dijet_subleadDeltaPhi"     , &dijet_subleadDeltaPhi_     );
-            ggHMva_->AddVariable( "dijet_subsubleadDeltaPhi"  , &dijet_subsubleadDeltaPhi_  );
-            ggHMva_->AddVariable( "dijet_leadDeltaEta"        , &dijet_leadDeltaEta_        );
-            ggHMva_->AddVariable( "dijet_subleadDeltaEta"     , &dijet_subleadDeltaEta_     );
-            ggHMva_->AddVariable( "dijet_subsubleadDeltaEta"  , &dijet_subsubleadDeltaEta_     );
-
+            ggHMva_->AddVariable( "gghMVA_n_rec_jets"                  , &n_rec_jets_          );
+            ggHMva_->AddVariable( "gghMVA_Mjj"                 , &dijet_Mjj_          );
+            ggHMva_->AddVariable( "gghMVA_leadEta"             , &dijet_leadEta_        );
+            ggHMva_->AddVariable( "gghMVA_subleadEta"          , &dijet_subleadEta_     );
+            ggHMva_->AddVariable( "gghMVA_subsubleadEta"       , &dijet_subsubleadEta_  );
+            ggHMva_->AddVariable( "gghMVA_leadJPt"             , &dijet_leadJPt_        );
+            ggHMva_->AddVariable( "gghMVA_SubleadJPt"          , &dijet_subleadJPt_     );
+            ggHMva_->AddVariable( "gghMVA_SubsubleadJPt"       , &dijet_subsubleadJPt_  );
+            ggHMva_->AddVariable( "gghMVA_leadPUMVA"           , &dijet_leadPUMVA_        );
+            ggHMva_->AddVariable( "gghMVA_subleadPUMVA"        , &dijet_subleadPUMVA_     );
+            ggHMva_->AddVariable( "gghMVA_subsubleadPUMVA"     , &dijet_subsubleadPUMVA_  );
+            ggHMva_->AddVariable( "gghMVA_leadDeltaPhi"        , &dijet_leadDeltaPhi_        );
+            ggHMva_->AddVariable( "gghMVA_subleadDeltaPhi"     , &dijet_subleadDeltaPhi_     );
+            ggHMva_->AddVariable( "gghMVA_subsubleadDeltaPhi"  , &dijet_subsubleadDeltaPhi_  );
+            ggHMva_->AddVariable( "gghMVA_leadDeltaEta"        , &dijet_leadDeltaEta_        );
+            ggHMva_->AddVariable( "gghMVA_subleadDeltaEta"     , &dijet_subleadDeltaEta_     );
+            ggHMva_->AddVariable( "gghMVA_subsubleadDeltaEta"  , &dijet_subsubleadDeltaEta_     );
             ggHMva_->AddVariable( "dipho_leadIDMVA"     , &dipho_leadIDMVA_        );
             ggHMva_->AddVariable( "dipho_subleadIDMVA"  , &dipho_subleadIDMVA_     );
             ggHMva_->AddVariable( "dipho_lead_ptoM"     , &dipho_lead_ptoM_        );
@@ -174,7 +171,6 @@ namespace flashgg {
             ggHMva_->AddVariable( "sigmawv"             , &sigmawv_       );
             ggHMva_->AddVariable( "diphopt"             , &diphopt_       );
 
-            
             ggHMva_->BookMVA( _MVAMethod.c_str() , ggHMVAweightfile_.fullPath() );
         }
         for (unsigned i = 0 ; i < inputTagJets_.size() ; i++) {
@@ -274,8 +270,7 @@ namespace flashgg {
 
                 
                 if ( (!_pujid_wp_pt_bin_1.empty())  &&
-                     (!_pujid_wp_pt_bin_2.empty())  &&
-                     (!_pujid_wp_pt_bin_3.empty())  ){
+                     (!_pujid_wp_pt_bin_2.empty())  ){
                     //std::cout << "VBFTagMVA::DEBUG  making the pujid --> "<< _pujid_wp_pt_bin_1.size() << std::endl;
                     bool pass=false;
                     for (UInt_t eta_bin=0; eta_bin < _pujid_wp_pt_bin_1.size(); eta_bin++ ){
@@ -294,10 +289,7 @@ namespace flashgg {
                             if ( jet->pt() >  30 &&
                                  jet->pt() <= 50 && jet->puJetIdMVA() > _pujid_wp_pt_bin_2[eta_bin] )
                                 pass=true;
-                            if ( jet->pt() >  50 &&
-                                 jet->pt() <= 100&& jet->puJetIdMVA() > _pujid_wp_pt_bin_3[eta_bin] )
-                                pass=true;
-                            if (jet->pt() > 100) pass = true;
+                            if (jet->pt() > 50) pass = true;
                         }
                     }
                     //                    std::cout << inputTagJets_[0] << " pt="<< jet->pt() << " :eta: "<< jet->eta() << " :mva: "<< jet->puJetIdMVA() << "  pass == " << pass << std::endl;
