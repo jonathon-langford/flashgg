@@ -275,17 +275,21 @@ namespace flashgg {
                             else if ( stxsNjets == 1) NNLOPSweight = NNLOPSWeights_[1]->Eval(min(stxsPtH,float(625.0)));
                             else if ( stxsNjets == 2) NNLOPSweight = NNLOPSWeights_[2]->Eval(min(stxsPtH,float(800.0)));
                             else if ( stxsNjets >= 3) NNLOPSweight = NNLOPSWeights_[3]->Eval(min(stxsPtH,float(925.0)));
-                            truth.setWeight("NNLOPS", NNLOPSweight);
-                            truth.setCentralWeight( truth.centralWeight() * NNLOPSweight );
+                            truth.setWeight("NNLOPSweight", NNLOPSweight);
                             if( debug_ ) {
-                                std::cout << "[TagSorter DEBUG] computed an NNLOPS weight of " << truth.weight("NNLOPS") << std::endl;
-                                std::cout << "[TagSorter DEBUG] the tag truth object now has a central weight of " << truth.centralWeight() << std::endl;
+                                std::cout << "[TagSorter DEBUG] computed and stored an NNLOPS weight of " << truth.weight("NNLOPSweight") << std::endl;
                             }
-                        }
-                        if( isGluonFusion_ && applyNNLOPSweight_ ) {
-                            SelectedTag->back().includeWeights( truth );
-                            if( debug_ ) {
-                                std::cout << "[TagSorter DEBUG] reweighing to NNLOPS, central weight being altered by a factor of " << truth.weight("NNLOPS") << std::endl;
+                            if( applyNNLOPSweight_ ) {
+                                if( debug_ ) {
+                                    std::cout << "[TagSorter DEBUG] reweighing to NNLOPS, central weight being altered by a factor of " << NNLOPSweight << std::endl;
+                                    std::cout << "[TagSorter DEBUG]  central weight before: " << SelectedTag->back().centralWeight() << std::endl;
+                                }
+                                WeightedObject NNLOPSobject;
+                                NNLOPSobject.setCentralWeight( NNLOPSweight );
+                                SelectedTag->back().includeWeights( NNLOPSobject );
+                                if( debug_ ) {
+                                    std::cout << "[TagSorter DEBUG]  central weight after: " << SelectedTag->back().centralWeight() << std::endl;
+                                }
                             }
                         }
                         SelectedTagTruth->push_back( truth );
@@ -407,14 +411,25 @@ namespace flashgg {
                 else if ( stxsNjets == 1) NNLOPSweight = NNLOPSWeights_[1]->Eval(min(stxsPtH,float(625.0)));
                 else if ( stxsNjets == 2) NNLOPSweight = NNLOPSWeights_[2]->Eval(min(stxsPtH,float(800.0)));
                 else if ( stxsNjets >= 3) NNLOPSweight = NNLOPSWeights_[3]->Eval(min(stxsPtH,float(925.0)));
-                truth_obj.setWeight("NNLOPS", NNLOPSweight);
+                truth_obj.setWeight("NNLOPSweight", NNLOPSweight);
+                if( debug_ ) {
+                    std::cout << "[TagSorter DEBUG] computed and stored an NNLOPS weight of " << truth_obj.weight("NNLOPSweight") << std::endl;
+                }
+                if( applyNNLOPSweight_ ) {
+                    if( debug_ ) {
+                        std::cout << "[TagSorter DEBUG] reweighing to NNLOPS, central weight being altered by a factor of " << NNLOPSweight << std::endl;
+                        std::cout << "[TagSorter DEBUG]  central weight before: " << SelectedTag->back().centralWeight() << std::endl;
+                    }
+                    WeightedObject NNLOPSobject;
+                    NNLOPSobject.setCentralWeight( NNLOPSweight );
+                    SelectedTag->back().includeWeights( NNLOPSobject );
+                    if( debug_ ) {
+                        std::cout << "[TagSorter DEBUG]  central weight after: " << SelectedTag->back().centralWeight() << std::endl;
+                    }
+                }
             }
             SelectedTagTruth->push_back(truth_obj);
             SelectedTag->back().setTagTruth( edm::refToPtr( edm::Ref<edm::OwnVector<TagTruthBase> >( rTagTruth, 0 ) ) );
-            if( isGluonFusion_ && applyNNLOPSweight_ ) {
-                float newCentralWeight = SelectedTagTruth->back().weight("NNLOPS") * SelectedTag->back().centralWeight();
-                SelectedTag->back().setCentralWeight( newCentralWeight );
-            }
             if( SelectedTagTruth->size() != 0 && debug_ ) {
                 std::cout << "******************************" << std::endl;
                 std::cout << " TRUTH FOR NO TAG..." << std::endl;
