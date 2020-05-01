@@ -27,10 +27,10 @@ def flashggPrepareTagSequence(process, options):
         flashggGluGluHMVA.ggHMVAweightfile = cms.FileInPath(str(options["flashggGluGluHMVA"]["weightFile"]))
         flashggGluGluHMVA.JetIDLevel = cms.string(str(options["flashggGluGluHMVA"]["jetID"]))
 
-    flashggTHQLeptonicTag.thqCatweightfile_ForNonPeakingBkg = cms.FileInPath(str(options['THQLeptonicTag']['MVAweights_VsAllBkg']))
-    flashggTHQLeptonicTag.MVAThreshold_ForNonPeakingBkg = cms.double(options['THQLeptonicTag']['MVAThreshold_VsAllBkg'])
-    flashggTHQLeptonicTag.thqleptonicMVAweightfile = cms.FileInPath(str(options['THQLeptonicTag']['MVAweights_VsttH']))
-    flashggTHQLeptonicTag.MVAThreshold_thq = cms.double(options['THQLeptonicTag']['MVAThreshold_VsttH'])
+    flashggTHQLeptonicTag.MVAweight_tHqVsNonHiggsBkg = cms.FileInPath(str(options['THQLeptonicTag']['MVAweights_VsAllBkg']))
+    flashggTHQLeptonicTag.MVAThreshold_tHqVsNonHiggsBkg = cms.double(options['THQLeptonicTag']['MVAThreshold_VsAllBkg'])
+    flashggTHQLeptonicTag.MVAweight_tHqVsttHBDT = cms.FileInPath(str(options['THQLeptonicTag']['MVAweights_VsttH']))
+    flashggTHQLeptonicTag.MVAThreshold_tHqVsttHBDT = cms.double(options['THQLeptonicTag']['MVAThreshold_VsttH'])
 
     flashggTagSequence = cms.Sequence(flashggDifferentialPhoIdInputsCorrection
                                       * flashggPrefireDiPhotons
