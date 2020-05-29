@@ -1477,11 +1477,15 @@ namespace flashgg {
                     int chosenTag = computeStage1Kinematics( tthltags_obj );
                     tthltags_obj.setStage1recoTag( chosenTag );
 
+                    float btagReshapeNorm = 1.;
+
                     for( unsigned int i = 0; i < tagJets.size(); ++i )
                     {
                         tthltags_obj.includeWeightsByLabel( *tagJets[i] , "JetBTagReshapeWeight");
+                        btagReshapeNorm *= tagJets[i]->weight("JetBTagReshapeWeightCentral");
                     }
 
+                    tthltags_obj.setWeight( "btagReshapeNorm_TTH_LEP", btagReshapeNorm );
 
                     for( unsigned int i = 0; i < Muons.size(); ++i )
                         tthltags_obj.includeWeights( *Muons.at(i));

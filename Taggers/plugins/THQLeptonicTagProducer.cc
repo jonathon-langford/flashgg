@@ -1369,8 +1369,10 @@ void THQLeptonicTagProducer::produce( Event &evt, const EventSetup & )
                 thqltags_obj.bTagWeight = 1.0;
                 thqltags_obj.bTagWeightDown = 1.0;
                 thqltags_obj.bTagWeightUp = 1.0;
+                float btagReshapeNorm = 1.;
                 for( auto j : SelJetVect_PtSorted ) {
                     thqltags_obj.includeWeights( *j );
+                    btagReshapeNorm *= j->weight("JetBTagReshapeWeightCentral");
 
                     /*	  if( j->hasWeight("JetBTagCutWeightCentral") ){
                     	      thqltags_obj.bTagWeight *= j->weight( "JetBTagCutWeightCentral" );
@@ -1381,6 +1383,8 @@ void THQLeptonicTagProducer::produce( Event &evt, const EventSetup & )
                     	    cout << "BTag weight is not set in jet" << endl;
                     */
                 }
+
+                thqltags_obj.setWeight( "btagReshapeNorm_THQ_LEP", btagReshapeNorm );
 
                 thqltags_obj.setVertices( vertices->ptrs() );
 

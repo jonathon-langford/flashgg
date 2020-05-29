@@ -1289,6 +1289,8 @@ namespace flashgg {
                     int chosenTag = computeStage1Kinematics( tthhtags_obj );
                     tthhtags_obj.setStage1recoTag( chosenTag );
 
+                    float btagReshapeNorm = 1.;
+
                     if(!useTTHHadronicMVA_){
                         for( unsigned num = 0; num < JetVect.size(); num++ ) {
                             tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagCutWeight");
@@ -1297,9 +1299,12 @@ namespace flashgg {
                     } else {
                         for( unsigned num = 0; num < JetVect.size(); num++ ) {
                             tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight");
+                            btagReshapeNorm *= JetVect[num]->weight("JetBTagReshapeWeightCentral");
                         }                    
                     }
                     tthhtags_obj.includeWeights( *dipho );
+
+                    tthhtags_obj.setWeight( "btagReshapeNorm_TTH_HAD", btagReshapeNorm );
 
                     tthhtags->push_back( tthhtags_obj );
                 }
