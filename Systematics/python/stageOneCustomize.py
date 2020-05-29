@@ -65,6 +65,9 @@ class StageOneCustomize():
             "CMS_hgg_mass[160,100,180]:=diPhoton().mass",
             "dZ[40,-20.,20.]:=(tagTruth().genPV().z-diPhoton().vtx().z)",
             "NNLOPSweight[1,-999999.,999999.] := tagTruth().weight(\"NNLOPSweight\")",
+            "btagReshapeNorm_TTH_LEP[1,-999999.,999999.] := weight(\"btagReshapeNorm_TTH_LEP\")",
+            "btagReshapeNorm_TTH_HAD[1,-999999.,999999.] := weight(\"btagReshapeNorm_TTH_HAD\")",
+            "btagReshapeNorm_THQ_LEP[1,-999999.,999999.] := weight(\"btagReshapeNorm_THQ_LEP\")",
             "centralObjectWeight[1,-999999.,999999.] := centralWeight"
         ]
 
