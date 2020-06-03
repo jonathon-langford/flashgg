@@ -86,6 +86,7 @@
 
     "flashggJetSystematics" : 
     {  
+        "doHEMuncertainty" : true,
         "doGranular" : true,
         "textFileName" : "flashgg/Systematics/data/JEC/Regrouped_Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt",
         "listOfSources" : [
