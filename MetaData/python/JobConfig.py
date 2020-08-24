@@ -178,6 +178,7 @@ class JobConfig(object):
             from flashgg.MetaData.mix_2017MCv2_DYJetsToLL import mix as mix_94X_mc2017
             #from flashgg.MetaData.mix_2017MCv2_GJet_Combined import mix as mix_94X_mc2017
             self.pu_distribs["94X_mc2017"] = mix_94X_mc2017.input.nbPileupEvents
+            #self.pu_distribs["106X_mc2017"] = mix_94X_mc2017.input.nbPileupEvents #FIXME temp hack
         except Exception:
             print "Failed to load 94X_mc2017 mixing"
         try:
